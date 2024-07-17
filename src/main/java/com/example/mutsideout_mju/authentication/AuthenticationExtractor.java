@@ -6,9 +6,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 @Slf4j
-@AllArgsConstructor
 public class AuthenticationExtractor {
     public static final String TOKEN_COOKIE_NAME = "AccessToken";
 
