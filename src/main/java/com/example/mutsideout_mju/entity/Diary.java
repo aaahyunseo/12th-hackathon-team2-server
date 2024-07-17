@@ -1,10 +1,7 @@
 package com.example.mutsideout_mju.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
@@ -21,4 +18,14 @@ public class Diary extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    public Diary setTitle(String title) {
+        this.title = title;
+        return this;
+    }
+
+    public Diary setContent(String content) {
+        this.content = content;
+        return this;
+    }
 }
