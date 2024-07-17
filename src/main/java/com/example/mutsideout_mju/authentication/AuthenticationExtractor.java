@@ -4,9 +4,7 @@ import com.example.mutsideout_mju.exception.UnauthorizedException;
 import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 @Slf4j
 public class AuthenticationExtractor {
@@ -18,7 +16,7 @@ public class AuthenticationExtractor {
             for (Cookie cookie : cookies) {
                 if (TOKEN_COOKIE_NAME.equals(cookie.getName())) {
                     log.info("extract cookie = {}", cookie.getValue());
-                    return JwtEncoder.decodeJwtBearerToken(String.valueOf(cookie.getValue()));
+                    return JwtEncoder.decode(String.valueOf(cookie.getValue()));
                 }
             }
         }
