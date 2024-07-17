@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -13,8 +14,8 @@ import java.util.UUID;
 public class PlannerService {
     private final PlannerRepository plannerRepository;
 
-    public void getAllPlanners() {
-        List<Planner> planners = plannerRepository.findAll();
+    public List<Planner> getAllPlanners() {
+        return plannerRepository.findAll();
     }
 
     public void createPlanner(String content) {
@@ -25,12 +26,27 @@ public class PlannerService {
         this.plannerRepository.save(planner);
     }
 
-    public void updatePlanner(String content, UUID plannerId) {
-        Planner planner = this.plannerRepository.findPlannerById(plannerId);
-        this.plannerRepository.deleteById(plannerId);
+    public Planner updatePlanner(String content, UUID plannerId) {
+        Optional<Planner> optionalPlanner = plannerRepository.findById(plannerId);
+        if (optionalPlanner.isPresent()) {
+            Planner planner = optionalPlanner.get();
+            planner.setContent(content);
+            return plannerRepository.save(planner);
+        }
+        return null;
     }
 
-    public void getAllCompletedPlanner(){}
+    public List<Planner> getAllCompletedPlanners() {
+        return plannerRepository.findByIsCompleted(true);
+    }
 
-    public void completePlannnerById(UUID plannerId){}
+    public Planner completePlannerById(UUID plannerId) {
+        Optional<Planner> optionalPlanner = plannerRepository.findById(plannerId);
+        if (optionalPlanner.isPresent()) {
+            Planner planner = optionalPlanner.get();
+            planner.setCompleted(true);
+            return plannerRepository.save(planner);
+        }
+        return null;
+    }
 }
