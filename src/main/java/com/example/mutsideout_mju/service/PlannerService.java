@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class PlannerService {
-    // email 비교 수정하기.
     private final PlannerRepository plannerRepository;
 
     public PlannerListResponseData getAllPlanners(User user) {
@@ -52,7 +51,7 @@ public class PlannerService {
     public Planner updatePlanner(PlannerDto plannerDto, UUID plannerId, User user) {
         Planner planner = findPlanner(plannerId);
 
-        if (!planner.getUser().getEmail().equals(user.getEmail())) {
+        if (!planner.getUser().getId().equals(user.getId())) {
             throw new UnauthorizedException(ErrorCode.NO_ACCESS, "해당 플래너에 접근 할 수 없습니다.");
         }
 
