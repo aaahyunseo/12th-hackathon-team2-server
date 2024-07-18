@@ -5,6 +5,9 @@ import com.example.mutsideout_mju.dto.response.planner.CompletedPlannerResponse;
 import com.example.mutsideout_mju.dto.response.planner.PlannerResponseData;
 import com.example.mutsideout_mju.entity.Planner;
 import com.example.mutsideout_mju.entity.User;
+import com.example.mutsideout_mju.exception.NotFoundException;
+import com.example.mutsideout_mju.exception.UnauthorizedException;
+import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.repository.PlannerRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,7 +48,7 @@ public class PlannerService {
         Planner planner = findPlanner(plannerId);
 
         if (!planner.getUser().getEmail().equals(user.getEmail())) {
-            throw new RuntimeException("접근 할 수 없습니다.");
+            throw new UnauthorizedException(ErrorCode.NO_ACCESS, "해당 플래너에 접근 할 수 없습니다.");
         }
 
         planner.setContent(plannerDto.getContent());
@@ -56,7 +59,7 @@ public class PlannerService {
         Planner planner = findPlanner(plannerId);
 
         if (!planner.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("접근 할 수 없습니다.");
+            throw new UnauthorizedException(ErrorCode.NO_ACCESS, "해당 플래너에 접근 할 수 없습니다.");
         }
 
         planner.setCompleted(true);
@@ -84,6 +87,6 @@ public class PlannerService {
 
     private Planner findPlanner(UUID plannerId) {
         return plannerRepository.findById(plannerId)
-                .orElseThrow(() -> new RuntimeException("플래너를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.PLANNER_NOT_FOUND));
     }
 }
