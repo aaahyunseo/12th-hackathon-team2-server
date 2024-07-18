@@ -8,4 +8,6 @@ import java.util.UUID;
 
 public interface PlannerRepository extends JpaRepository<Planner, UUID> {
     List<Planner> findByIsCompleted(boolean isCompleted);
+
+    List<Planner> findAllByUserId(UUID userId);
 }

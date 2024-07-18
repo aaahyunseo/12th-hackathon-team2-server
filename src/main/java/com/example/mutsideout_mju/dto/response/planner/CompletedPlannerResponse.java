@@ -1,5 +1,6 @@
 package com.example.mutsideout_mju.dto.response.planner;
 
+import com.example.mutsideout_mju.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,4 +16,5 @@ public class CompletedPlannerResponse {
     private final String content;
     private final boolean isCompleted;
     private final LocalDateTime modifiedDate;
+    private final User user;
 }
