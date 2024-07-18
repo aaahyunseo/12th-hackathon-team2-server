@@ -6,14 +6,14 @@ import org.springframework.data.domain.Page;
 
 @Getter
 @Builder
-public class PaginationDto {
+public class PaginationData {
     private int totalPage;
     private int currentPage;
 
-    public static <T> PaginationDto paginationDto(Page<T> page){
-        return  PaginationDto.builder()
+    public static <T> PaginationData paginationData(Page<T> page){
+        return  PaginationData.builder()
                 .totalPage(page.getTotalPages())
-                .currentPage(page.getNumber())
+                .currentPage(page.getNumber()+1)
                 .build();
     }
 }
