@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class PlannerService {
+    // user, exception 수정하기.
     private final PlannerRepository plannerRepository;
 
     public List<PlannerResponseData> getAllPlanners() {
@@ -53,7 +54,8 @@ public class PlannerService {
         return null;
     }
 
-    public List<CompletedPlannerResponse> getAllCompletedPlanners() {
+    // PlannerService 내에서 사용하는 메소드.
+    private List<CompletedPlannerResponse> getAllCompletedPlanners() {
         List<CompletedPlannerResponse> completedPlannerList = new ArrayList<>();
         List<Planner> completedPlanners = plannerRepository.findByIsCompleted(true);
         for (Planner planner : completedPlanners) {
