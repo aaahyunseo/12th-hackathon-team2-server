@@ -17,10 +17,12 @@ public class PlannerResponseData {
     private final boolean isCompleted;
     private final LocalDateTime createdAt;
 
-    public PlannerResponseData(Planner planner) {
-        this.plannerId = planner.getId();
-        this.content = planner.getContent();
-        this.isCompleted = planner.isCompleted();
-        this.createdAt = planner.getCreatedAt();
+    public static PlannerResponseData fromPlanner(Planner planner) {
+        return new PlannerResponseData(
+                planner.getId(),
+                planner.getContent(),
+                planner.isCompleted(),
+                planner.getModifiedDate()
+        );
     }
 }
