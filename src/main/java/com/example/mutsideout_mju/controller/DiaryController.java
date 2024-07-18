@@ -1,6 +1,7 @@
 package com.example.mutsideout_mju.controller;
 
 import com.example.mutsideout_mju.authentication.AuthenticatedUser;
+import com.example.mutsideout_mju.dto.request.PaginationDto;
 import com.example.mutsideout_mju.dto.request.diary.UpdateDiaryDto;
 import com.example.mutsideout_mju.dto.request.diary.WriteDiaryDto;
 import com.example.mutsideout_mju.dto.response.diary.DiaryListResponseData;
@@ -9,7 +10,7 @@ import com.example.mutsideout_mju.dto.response.ResponseDto;
 import com.example.mutsideout_mju.entity.User;
 import com.example.mutsideout_mju.service.DiaryService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,16 +19,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @Controller
-@AllArgsConstructor
+@RequiredArgsConstructor    //생성자 주입
 @RequestMapping("/diaries")
 public class DiaryController {
 
-    private DiaryService diaryService;
+    private final DiaryService diaryService;
 
     //감정일기 전체 목록 조회
     @GetMapping
-    public ResponseEntity<ResponseDto<DiaryListResponseData>> getDiaryList(@RequestParam(value = "page", defaultValue = "0") int page){
-        DiaryListResponseData diaryListResponseData = diaryService.getDiaryList(page);
+    public ResponseEntity<ResponseDto<DiaryListResponseData>> getDiaryList(@AuthenticatedUser User user, @RequestParam(value = "page", defaultValue = "1") int page){
+        PaginationDto paginationDto = new PaginationDto(page);
+        DiaryListResponseData diaryListResponseData = diaryService.getDiaryList(user, paginationDto);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK,"감정일기 전체 목록을 조회하였습니다.", diaryListResponseData), HttpStatus.OK);
     }
 
