@@ -35,8 +35,8 @@ public class DiaryController {
 
     //감정일기 상세 조회
     @GetMapping("/{diaryId}")
-    public ResponseEntity<ResponseDto<DiaryResponseData>> getDiary(@AuthenticatedUser User user, @PathVariable UUID diaryId){
-        DiaryResponseData diaryResponseData = diaryService.getDiary(user, diaryId);
+    public ResponseEntity<ResponseDto<DiaryResponseData>> getDiaryById(@AuthenticatedUser User user, @PathVariable UUID diaryId){
+        DiaryResponseData diaryResponseData = diaryService.getDiaryById(user, diaryId);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK,"감정일기 전체 목록을 조회하였습니다.", diaryResponseData), HttpStatus.OK);
     }
 
@@ -49,15 +49,15 @@ public class DiaryController {
 
     //감정일기 수정
     @PatchMapping("/{diaryId}")
-    public ResponseEntity<ResponseDto<Void>> updateDiary(@AuthenticatedUser User user, @PathVariable UUID diaryId,  @RequestBody @Valid UpdateDiaryDto updateDiaryDto){
-        diaryService.updateDiary(user, diaryId, updateDiaryDto);
+    public ResponseEntity<ResponseDto<Void>> updateDiaryById(@AuthenticatedUser User user, @PathVariable UUID diaryId,  @RequestBody @Valid UpdateDiaryDto updateDiaryDto){
+        diaryService.updateDiaryById(user, diaryId, updateDiaryDto);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK,"감정일기가 정상적으로 수정되었습니다."), HttpStatus.OK);
     }
 
     //감정일기 삭제
     @DeleteMapping("/{diaryId}")
-    public ResponseEntity<ResponseDto<Void>> deleteDiary(@AuthenticatedUser User user, @PathVariable UUID diaryId){
-        diaryService.deleteDiary(user, diaryId);
+    public ResponseEntity<ResponseDto<Void>> deleteDiaryById(@AuthenticatedUser User user, @PathVariable UUID diaryId){
+        diaryService.deleteDiaryById(user, diaryId);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK,"감정일기가 정상적으로 삭제되었습니다."), HttpStatus.OK);
     }
 }

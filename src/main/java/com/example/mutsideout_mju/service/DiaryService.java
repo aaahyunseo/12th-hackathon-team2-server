@@ -44,7 +44,7 @@ public class DiaryService {
     }
 
     //감정일기 상세 조회
-    public DiaryResponseData getDiary(User user, UUID diaryId){
+    public DiaryResponseData getDiaryById(User user, UUID diaryId){
         Diary diary = userRepository.findById(user.getId()).get().getDiaries().stream()
                 .filter(d -> d.getId().equals(diaryId))
                 .findFirst()
@@ -63,7 +63,7 @@ public class DiaryService {
     }
 
     //감정일기 수정
-    public void updateDiary(User user, UUID diaryId, UpdateDiaryDto updateDiaryDto){
+    public void updateDiaryById(User user, UUID diaryId, UpdateDiaryDto updateDiaryDto){
         Diary newDiary = findDiaryById(diaryId);
         checkUser(user, newDiary);
         newDiary.setTitle(updateDiaryDto.getTitle())
@@ -72,7 +72,7 @@ public class DiaryService {
     }
 
     //감정일기 삭제
-    public void deleteDiary(User user, UUID diaryId){
+    public void deleteDiaryById(User user, UUID diaryId){
         Diary diary = findDiaryById(diaryId);
         checkUser(user, diary);
         diaryRepository.deleteById(diaryId);
