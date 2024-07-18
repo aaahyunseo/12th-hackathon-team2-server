@@ -4,6 +4,7 @@ import com.example.mutsideout_mju.authentication.AuthenticatedUser;
 import com.example.mutsideout_mju.dto.planner.PlannerDto;
 import com.example.mutsideout_mju.dto.response.ResponseDto;
 import com.example.mutsideout_mju.dto.response.planner.CompletedPlannerResponse;
+import com.example.mutsideout_mju.dto.response.planner.PlannerListResponseData;
 import com.example.mutsideout_mju.dto.response.planner.PlannerResponseData;
 import com.example.mutsideout_mju.entity.User;
 import com.example.mutsideout_mju.service.PlannerService;
@@ -26,8 +27,8 @@ public class PlannerController {
 
     // 모든 미완료 상태의 planner 조회하기
     @GetMapping
-    public ResponseEntity<ResponseDto<List<PlannerResponseData>>> getAllPlanners(@AuthenticatedUser User user) {
-        List<PlannerResponseData> planners = plannerService.getAllPlanners(user);
+    public ResponseEntity<ResponseDto<PlannerListResponseData>> getAllPlanners(@AuthenticatedUser User user) {
+        PlannerListResponseData planners = plannerService.getAllPlanners(user);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "uncompleted plans", planners), HttpStatus.OK);
     }
 
@@ -53,7 +54,7 @@ public class PlannerController {
     }
 
     // planner 완료하기
-    @PutMapping("/{plannerId}/complete")
+    @PutMapping("/{plannerId}")
     public ResponseEntity<ResponseDto<Void>> completePlannerById(@AuthenticatedUser User user, @PathVariable UUID plannerId) {
         plannerService.completePlannerById(plannerId, user);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "complete plan"), HttpStatus.OK);

@@ -2,6 +2,7 @@ package com.example.mutsideout_mju.service;
 
 import com.example.mutsideout_mju.dto.planner.PlannerDto;
 import com.example.mutsideout_mju.dto.response.planner.CompletedPlannerResponse;
+import com.example.mutsideout_mju.dto.response.planner.PlannerListResponseData;
 import com.example.mutsideout_mju.dto.response.planner.PlannerResponseData;
 import com.example.mutsideout_mju.entity.Planner;
 import com.example.mutsideout_mju.entity.User;
@@ -22,17 +23,19 @@ public class PlannerService {
     // 지금은 User 추가 하기
     private final PlannerRepository plannerRepository;
 
-    public List<PlannerResponseData> getAllPlanners(User user) {
-        List<PlannerResponseData> plannerList = new ArrayList<>();
-        List<Planner> allPlanners = Optional.ofNullable(plannerRepository.findAllByUserId(user.getId())).orElse(Collections.emptyList());
+    public PlannerListResponseData getAllPlanners(User user) {
+        PlannerListResponseData plannerListResponseData = new PlannerListResponseData();
+
+        List<Planner> allPlanners = Optional.ofNullable(plannerRepository.findAllByUserId(user.getId()))
+                .orElse(Collections.emptyList());
 
         for (Planner planner : allPlanners) {
             if (!planner.isCompleted()) {
                 PlannerResponseData plannerResponseData = new PlannerResponseData(planner);
-                plannerList.add(plannerResponseData);
+                plannerListResponseData.addPlanner(plannerResponseData);
             }
         }
-        return plannerList;
+        return plannerListResponseData;
     }
 
     public void createPlanner(PlannerDto plannerDto, User user) {
