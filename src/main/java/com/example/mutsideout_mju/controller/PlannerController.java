@@ -7,6 +7,7 @@ import com.example.mutsideout_mju.dto.response.planner.CompletedPlannerResponse;
 import com.example.mutsideout_mju.dto.response.planner.PlannerResponseData;
 import com.example.mutsideout_mju.entity.User;
 import com.example.mutsideout_mju.service.PlannerService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,14 +33,14 @@ public class PlannerController {
 
     // 새 planner 생성
     @PostMapping
-    public ResponseEntity<ResponseDto<Void>> createPlanner(@AuthenticatedUser User user, @RequestBody PlannerDto plannerDto) {
+    public ResponseEntity<ResponseDto<Void>> createPlanner(@AuthenticatedUser User user, @RequestBody @Valid PlannerDto plannerDto) {
         plannerService.createPlanner(plannerDto, user);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.CREATED, "plan created"), HttpStatus.CREATED);
     }
 
     // planner 수정
     @PatchMapping("/{plannerId}")
-    public ResponseEntity<ResponseDto<Void>> updatePlanner(@AuthenticatedUser User user, @RequestBody PlannerDto plannerDto, @PathVariable UUID plannerId) {
+    public ResponseEntity<ResponseDto<Void>> updatePlanner(@AuthenticatedUser User user, @RequestBody @Valid PlannerDto plannerDto, @PathVariable UUID plannerId) {
         plannerService.updatePlanner(plannerDto, plannerId, user);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "plan updated"), HttpStatus.OK);
     }

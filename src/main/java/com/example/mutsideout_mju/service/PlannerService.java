@@ -26,12 +26,7 @@ public class PlannerService {
         for (Planner planner : allPlanners) {
             if(!planner.isCompleted())
             {
-                PlannerResponseData plannerResponseData = PlannerResponseData.builder()
-                        .plannerId(planner.getId())
-                        .content(planner.getContent())
-                        .isCompleted(planner.isCompleted())
-                        .createdAt(planner.getCreatedAt())
-                        .build();
+                PlannerResponseData plannerResponseData = new PlannerResponseData(planner);
                 plannerList.add(plannerResponseData);
             }
         }
@@ -48,12 +43,7 @@ public class PlannerService {
     }
 
     public Planner updatePlanner(PlannerDto plannerDto, UUID plannerId, User user) {
-        Optional<Planner> optionalPlanner = plannerRepository.findById(plannerId);
-        if (!optionalPlanner.isPresent()) {
-            throw new RuntimeException("잘못된 plannerId 입니다.");
-        }
-
-        Planner planner = optionalPlanner.get();
+        Planner planner = findPlanner(plannerId);
 
         if (!planner.getUser().equals(user)) {
             throw new RuntimeException("접근 할 수 없습니다.");
@@ -63,45 +53,38 @@ public class PlannerService {
         return plannerRepository.save(planner);
     }
 
-    public Map<LocalDate, List<CompletedPlannerResponse>> getCompletedPlannersGroupedByDate(User user) {
-        List<CompletedPlannerResponse> completedPlannerList = getAllCompletedPlanners();
-        List<CompletedPlannerResponse> filteredList = new ArrayList<>();
+    public Planner completePlannerById(UUID plannerId, User user) {
+        Planner planner = findPlanner(plannerId);
 
-        for (CompletedPlannerResponse completedPlannerResponse : completedPlannerList) {
-            if (completedPlannerResponse.getUser().equals(user)) {
-                filteredList.add(completedPlannerResponse);
-            }
+        if (!planner.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("접근 할 수 없습니다.");
         }
 
-        return filteredList.stream()
+        planner.setCompleted(true);
+        return plannerRepository.save(planner);
+    }
+
+    public Map<LocalDate, List<CompletedPlannerResponse>> getCompletedPlannersGroupedByDate(User user) {
+        List<CompletedPlannerResponse> completedPlannerList = getAllCompletedPlanners(user);
+
+        return completedPlannerList.stream()
                 .collect(Collectors.groupingBy(planner -> planner.getModifiedDate().toLocalDate()));
     }
 
-    public Planner completePlannerById(UUID plannerId, User user) {
-        Optional<Planner> optionalPlanner = plannerRepository.findById(plannerId);
-        if (optionalPlanner.isPresent() && optionalPlanner.get().getUser().equals(user)) {
-            Planner planner = optionalPlanner.get();
-            planner.setCompleted(true);
-            return plannerRepository.save(planner);
-        } else {
-            throw new RuntimeException("접근 할 수 없습니다.");
-        }
-    }
-
-    // PlannerService 내에서 사용하는 메소드.
-    private List<CompletedPlannerResponse> getAllCompletedPlanners() {
+    private List<CompletedPlannerResponse> getAllCompletedPlanners(User user) {
         List<CompletedPlannerResponse> completedPlannerList = new ArrayList<>();
-        List<Planner> completedPlanners = plannerRepository.findByIsCompleted(true);
+        List<Planner> completedPlanners = plannerRepository.findByIsCompletedAndUser(true, user);
+
         for (Planner planner : completedPlanners) {
-            CompletedPlannerResponse plannerResponseData = CompletedPlannerResponse.builder()
-                    .plannerId(planner.getId())
-                    .content(planner.getContent())
-                    .isCompleted(planner.isCompleted())
-                    .modifiedDate(planner.getModifiedDate())
-                    .user(planner.getUser())
-                    .build();
+            CompletedPlannerResponse plannerResponseData = new CompletedPlannerResponse(planner);
             completedPlannerList.add(plannerResponseData);
         }
+
         return completedPlannerList;
+    }
+
+    private Planner findPlanner(UUID plannerId) {
+        return plannerRepository.findById(plannerId)
+                .orElseThrow(() -> new RuntimeException("플래너를 찾을 수 없습니다."));
     }
 }
