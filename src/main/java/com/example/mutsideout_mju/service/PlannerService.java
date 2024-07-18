@@ -24,8 +24,7 @@ public class PlannerService {
         List<Planner> allPlanners = Optional.ofNullable(plannerRepository.findAllByUserId(user.getId())).orElse(Collections.emptyList());
 
         for (Planner planner : allPlanners) {
-            if(!planner.isCompleted())
-            {
+            if (!planner.isCompleted()) {
                 PlannerResponseData plannerResponseData = new PlannerResponseData(planner);
                 plannerList.add(plannerResponseData);
             }
