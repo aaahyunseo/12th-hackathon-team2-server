@@ -49,15 +49,18 @@ public class PlannerService {
 
     public Planner updatePlanner(PlannerDto plannerDto, UUID plannerId, User user) {
         Optional<Planner> optionalPlanner = plannerRepository.findById(plannerId);
-        if(optionalPlanner.get().getUser() != user){
+        if (!optionalPlanner.isPresent()) {
+            throw new RuntimeException("잘못된 plannerId 입니다.");
+        }
+
+        Planner planner = optionalPlanner.get();
+
+        if (!planner.getUser().equals(user)) {
             throw new RuntimeException("접근 할 수 없습니다.");
         }
-        if (optionalPlanner.isPresent()) {
-            Planner planner = optionalPlanner.get();
-            planner.setContent(plannerDto.getContent());
-            return plannerRepository.save(planner);
-        }
-        return null;
+
+        planner.setContent(plannerDto.getContent());
+        return plannerRepository.save(planner);
     }
 
     public Map<LocalDate, List<CompletedPlannerResponse>> getCompletedPlannersGroupedByDate(User user) {
