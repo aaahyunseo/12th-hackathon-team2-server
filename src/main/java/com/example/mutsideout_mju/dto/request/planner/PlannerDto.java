@@ -1,4 +1,4 @@
-package com.example.mutsideout_mju.dto.planner;
+package com.example.mutsideout_mju.dto.request.planner;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import jakarta.validation.constraints.NotBlank;

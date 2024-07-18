@@ -1,11 +1,12 @@
 package com.example.mutsideout_mju.controller;
 
 import com.example.mutsideout_mju.authentication.AuthenticatedUser;
-import com.example.mutsideout_mju.dto.planner.PlannerDto;
+import com.example.mutsideout_mju.dto.request.planner.CompletePlannerRequestDto;
+import com.example.mutsideout_mju.dto.request.planner.PlannerDto;
 import com.example.mutsideout_mju.dto.response.ResponseDto;
 import com.example.mutsideout_mju.dto.response.planner.CompletedPlannerResponse;
+import com.example.mutsideout_mju.dto.response.planner.GroupedCompletedPlannerResponse;
 import com.example.mutsideout_mju.dto.response.planner.PlannerListResponseData;
-import com.example.mutsideout_mju.dto.response.planner.PlannerResponseData;
 import com.example.mutsideout_mju.entity.User;
 import com.example.mutsideout_mju.service.PlannerService;
 import jakarta.validation.Valid;
@@ -48,15 +49,18 @@ public class PlannerController {
 
     // 완료 상태의 planner들 조회하기
     @GetMapping("/completed")
-    public ResponseEntity<ResponseDto<Map<LocalDate, List<CompletedPlannerResponse>>>> getAllCompletedPlanners(@AuthenticatedUser User user) {
-        Map<LocalDate, List<CompletedPlannerResponse>> completedPlanners = plannerService.getCompletedPlannersGroupedByDate(user);
+    public ResponseEntity<ResponseDto<GroupedCompletedPlannerResponse>> getAllCompletedPlanners(@AuthenticatedUser User user) {
+        GroupedCompletedPlannerResponse completedPlanners = plannerService.getCompletedPlannersGroupedByDate(user);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "completed plans", completedPlanners), HttpStatus.OK);
     }
 
     // planner 완료하기
     @PutMapping("/{plannerId}")
-    public ResponseEntity<ResponseDto<Void>> completePlannerById(@AuthenticatedUser User user, @PathVariable UUID plannerId) {
-        plannerService.completePlannerById(plannerId, user);
+    public ResponseEntity<ResponseDto<Void>> completePlannerById(
+            @AuthenticatedUser User user,
+            @RequestBody @Valid CompletePlannerRequestDto requestDto,
+            @PathVariable UUID plannerId) {
+        plannerService.completePlannerById(plannerId, requestDto, user);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "complete plan"), HttpStatus.OK);
     }
 }
