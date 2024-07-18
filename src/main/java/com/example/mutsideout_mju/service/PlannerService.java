@@ -55,7 +55,7 @@ public class PlannerService {
         return plannerRepository.save(planner);
     }
 
-    public Planner completePlannerById(UUID plannerId, User user) {
+    public void completePlannerById(UUID plannerId, User user) {
         Planner planner = findPlanner(plannerId);
 
         if (!planner.getUser().getId().equals(user.getId())) {
@@ -63,7 +63,7 @@ public class PlannerService {
         }
 
         planner.setCompleted(true);
-        return plannerRepository.save(planner);
+        plannerRepository.save(planner);
     }
 
     public Map<LocalDate, List<CompletedPlannerResponse>> getCompletedPlannersGroupedByDate(User user) {
