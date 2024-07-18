@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @Controller
-@RequiredArgsConstructor    //생성자 주입
+@RequiredArgsConstructor
 @RequestMapping("/diaries")
 public class DiaryController {
 
@@ -30,14 +30,14 @@ public class DiaryController {
     public ResponseEntity<ResponseDto<DiaryListResponseData>> getDiaryList(@AuthenticatedUser User user, @RequestParam(value = "page", defaultValue = "1") int page){
         PaginationDto paginationDto = new PaginationDto(page);
         DiaryListResponseData diaryListResponseData = diaryService.getDiaryList(user, paginationDto);
-        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK,"감정일기 전체 목록을 조회하였습니다.", diaryListResponseData), HttpStatus.OK);
+        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK,"감정일기 전체 목록 조회에 성공하였습니다.", diaryListResponseData), HttpStatus.OK);
     }
 
     //감정일기 상세 조회
     @GetMapping("/{diaryId}")
     public ResponseEntity<ResponseDto<DiaryResponseData>> getDiaryById(@AuthenticatedUser User user, @PathVariable UUID diaryId){
         DiaryResponseData diaryResponseData = diaryService.getDiaryById(user, diaryId);
-        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK,"감정일기 전체 목록을 조회하였습니다.", diaryResponseData), HttpStatus.OK);
+        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK,"감정일기 조회에 성공하였습니다.", diaryResponseData), HttpStatus.OK);
     }
 
     //감정일기 작성
