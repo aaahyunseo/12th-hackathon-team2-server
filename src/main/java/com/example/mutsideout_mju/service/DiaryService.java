@@ -73,8 +73,7 @@ public class DiaryService {
 
     //감정일기 삭제
     public void deleteDiaryById(User user, UUID diaryId){
-        Diary diary = findDiaryById(diaryId);
-        checkUser(user, diary);
+        checkUser(user, findDiaryById(diaryId));
         diaryRepository.deleteById(diaryId);
     }
 
