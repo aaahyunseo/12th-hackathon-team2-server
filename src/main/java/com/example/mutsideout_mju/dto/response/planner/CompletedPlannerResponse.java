@@ -19,11 +19,13 @@ public class CompletedPlannerResponse {
     private final LocalDateTime modifiedDate;
     private final UUID userId;
 
-    public CompletedPlannerResponse(Planner planner) {
-        this.plannerId = planner.getId();
-        this.content = planner.getContent();
-        this.isCompleted = planner.isCompleted();
-        this.modifiedDate = planner.getModifiedDate();
-        this.userId = planner.getUser().getId();
+    public static CompletedPlannerResponse fromPlanner(Planner planner) {
+        return new CompletedPlannerResponse(
+                planner.getId(),
+                planner.getContent(),
+                planner.isCompleted(),
+                planner.getModifiedDate(),
+                planner.getUser().getId()
+        );
     }
 }
