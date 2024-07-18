@@ -17,13 +17,13 @@ public class CompletedPlannerResponse {
     private final String content;
     private final boolean isCompleted;
     private final LocalDateTime modifiedDate;
-    private final User user;
+    private final UUID userId;
 
     public CompletedPlannerResponse(Planner planner) {
         this.plannerId = planner.getId();
         this.content = planner.getContent();
         this.isCompleted = planner.isCompleted();
         this.modifiedDate = planner.getModifiedDate();
-        this.user = planner.getUser();
+        this.userId = planner.getUser().getId();
     }
 }
