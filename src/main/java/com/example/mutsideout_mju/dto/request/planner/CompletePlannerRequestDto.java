@@ -6,5 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CompletePlannerRequestDto {
-    private boolean isCompleted;
+    private Boolean isCompleted;
 }

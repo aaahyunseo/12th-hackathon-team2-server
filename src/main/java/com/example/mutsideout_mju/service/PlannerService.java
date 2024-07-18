@@ -25,18 +25,14 @@ public class PlannerService {
     private final PlannerRepository plannerRepository;
 
     public PlannerListResponseData getAllPlanners(User user) {
-        PlannerListResponseData plannerListResponseData = new PlannerListResponseData();
+        List<Planner> allPlanners = plannerRepository.findAllByUserId(user.getId());
 
-        List<Planner> allPlanners = Optional.ofNullable(plannerRepository.findAllByUserId(user.getId()))
-                .orElse(Collections.emptyList());
+        List<PlannerResponseData> plannerResponseDataList = allPlanners.stream()
+                .filter(planner -> !planner.isCompleted())
+                .map(PlannerResponseData::fromPlanner)
+                .collect(Collectors.toList());
 
-        for (Planner planner : allPlanners) {
-            if (!planner.isCompleted()) {
-                PlannerResponseData plannerResponseData = new PlannerResponseData(planner);
-                plannerListResponseData.addPlanner(plannerResponseData);
-            }
-        }
-        return plannerListResponseData;
+        return new PlannerListResponseData(plannerResponseDataList);
     }
 
     public void createPlanner(PlannerDto plannerDto, User user) {
@@ -68,7 +64,7 @@ public class PlannerService {
                 throw new UnauthorizedException(ErrorCode.NO_ACCESS, "해당 플래너에 접근 할 수 없습니다.");
             }
 
-            planner.setCompleted(requestDto.isCompleted());
+            planner.setCompleted(requestDto.getIsCompleted());
             plannerRepository.save(planner);
         } else {
             throw new RuntimeException("Planner not found");
@@ -78,33 +74,16 @@ public class PlannerService {
         List<CompletedPlannerResponse> completedPlannerList = getAllCompletedPlanners(user);
         Map<LocalDate, List<CompletedPlannerResponse>> groupedPlanners = completedPlannerList.stream()
                 .collect(Collectors.groupingBy(planner -> planner.getModifiedDate().toLocalDate()));
+
         return new GroupedCompletedPlannerResponse(groupedPlanners);
     }
 
     private List<CompletedPlannerResponse> getAllCompletedPlanners(User user) {
         List<Planner> completedPlanners = plannerRepository.findByIsCompletedAndUser(true, user);
         return completedPlanners.stream()
-                .map(CompletedPlannerResponse::new).collect(Collectors.toList());
+                .map(CompletedPlannerResponse::fromPlanner)
+                .collect(Collectors.toList());
     }
-
-//    public Map<LocalDate, List<CompletedPlannerResponse>> getCompletedPlannersGroupedByDate(User user) {
-//        List<CompletedPlannerResponse> completedPlannerList = getAllCompletedPlanners(user);
-//
-//        return completedPlannerList.stream()
-//                .collect(Collectors.groupingBy(planner -> planner.getModifiedDate().toLocalDate()));
-//    }
-//
-//    private List<CompletedPlannerResponse> getAllCompletedPlanners(User user) {
-//        List<CompletedPlannerResponse> completedPlannerList = new ArrayList<>();
-//        List<Planner> completedPlanners = plannerRepository.findByIsCompletedAndUser(true, user);
-//
-//        for (Planner planner : completedPlanners) {
-//            CompletedPlannerResponse plannerResponseData = new CompletedPlannerResponse(planner);
-//            completedPlannerList.add(plannerResponseData);
-//        }
-//
-//        return completedPlannerList;
-//    }
 
     private Planner findPlanner(UUID plannerId) {
         return plannerRepository.findById(plannerId)
