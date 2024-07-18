@@ -15,6 +15,7 @@ import com.example.mutsideout_mju.repository.PlannerRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.xml.bind.ValidationException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -56,6 +57,9 @@ public class PlannerService {
     }
 
     public void completePlannerById(UUID plannerId, CompletePlannerRequestDto requestDto, User user) {
+        if (!requestDto.getIsCompleted()) {
+            throw new UnauthorizedException(ErrorCode.INVALID_PLANNER_ACCESS);
+        }
         Optional<Planner> optionalPlanner = plannerRepository.findById(plannerId);
         if (optionalPlanner.isPresent()) {
             Planner planner = optionalPlanner.get();
@@ -63,13 +67,13 @@ public class PlannerService {
             if (!planner.getUser().getId().equals(user.getId())) {
                 throw new UnauthorizedException(ErrorCode.NO_ACCESS, "해당 플래너에 접근 할 수 없습니다.");
             }
-
             planner.setCompleted(requestDto.getIsCompleted());
             plannerRepository.save(planner);
         } else {
             throw new RuntimeException("Planner not found");
         }
     }
+
     public GroupedCompletedPlannerResponse getCompletedPlannersGroupedByDate(User user) {
         List<CompletedPlannerResponse> completedPlannerList = getAllCompletedPlanners(user);
         Map<LocalDate, List<CompletedPlannerResponse>> groupedPlanners = completedPlannerList.stream()
