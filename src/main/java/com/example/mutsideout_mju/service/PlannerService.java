@@ -45,7 +45,7 @@ public class PlannerService {
     public Planner updatePlanner(PlannerDto plannerDto, UUID plannerId, User user) {
         Planner planner = findPlanner(plannerId);
 
-        if (!planner.getUser().equals(user)) {
+        if (!planner.getUser().getEmail().equals(user.getEmail())) {
             throw new RuntimeException("접근 할 수 없습니다.");
         }
 
