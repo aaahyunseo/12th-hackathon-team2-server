@@ -19,7 +19,8 @@ public enum ErrorCode {
     NOT_FOUND_PAGE("4041","존재하지 않는 페이지입니다."),
     DIARY_NOT_FOUND("4042","존재하지 않는 일기입니다."),
 
-    ROOM_NOT_FOUND("4044","존재하지 않는 방입니다."),
+
+    ROOM_NOT_FOUND("4045","존재하지 않는 방입니다."),
 
     //ConflictException
     DUPLICATED_NAME("4091","이미 사용 중인 이름입니다."),
