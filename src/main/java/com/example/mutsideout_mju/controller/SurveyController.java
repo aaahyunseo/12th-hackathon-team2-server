@@ -16,14 +16,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/surveys")
 @RequiredArgsConstructor
 public class SurveyController {
 
     private final SurveyService surveyService;
     private final UserService userService;
 
-    @PostMapping
+    @PostMapping("/surveys")
     public ResponseEntity<ResponseDto<UserGradeResponseDto>> saveSurveyResults(@AuthenticatedUser User user,
                                                                @RequestBody @Valid SurveyResultListDto surveyResultListDto) {
         surveyService.saveSurveyResults(user, surveyResultListDto);
@@ -31,7 +30,7 @@ public class SurveyController {
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "설문조사 저장 및 유저 등급 반환 완료", userGradeResponseDto), HttpStatus.OK);
     }
 
-    @GetMapping
+    @GetMapping("/questions")
     public ResponseEntity<ResponseDto<SurveyQuestionListResponseDto>> getAllSurveyQuestions() {
         SurveyQuestionListResponseDto surveyList = surveyService.getAllSurveyQuestions();
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "설문조사 질문 전체 조회 완료", surveyList), HttpStatus.OK);
