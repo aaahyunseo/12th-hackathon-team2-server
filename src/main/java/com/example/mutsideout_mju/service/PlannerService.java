@@ -2,10 +2,7 @@ package com.example.mutsideout_mju.service;
 
 import com.example.mutsideout_mju.dto.request.planner.CompletePlannerRequestDto;
 import com.example.mutsideout_mju.dto.request.planner.PlannerDto;
-import com.example.mutsideout_mju.dto.response.planner.CompletedPlannerResponse;
-import com.example.mutsideout_mju.dto.response.planner.GroupedCompletedPlannerResponse;
-import com.example.mutsideout_mju.dto.response.planner.PlannerListResponseData;
-import com.example.mutsideout_mju.dto.response.planner.PlannerResponseData;
+import com.example.mutsideout_mju.dto.response.planner.*;
 import com.example.mutsideout_mju.entity.Planner;
 import com.example.mutsideout_mju.entity.User;
 import com.example.mutsideout_mju.exception.NotFoundException;
@@ -48,7 +45,7 @@ public class PlannerService {
     public void updatePlanner(PlannerDto plannerDto, UUID plannerId, User user) {
         Planner planner = findPlanner(plannerId);
 
-        if(!planner.isCompleted()){
+        if(planner.isCompleted()){
             throw new UnauthorizedException(ErrorCode.INVALID_PLANNER_ACCESS);
         }
         if (!planner.getUser().getId().equals(user.getId())) {
@@ -64,6 +61,7 @@ public class PlannerService {
             throw new UnauthorizedException(ErrorCode.INVALID_PLANNER_ACCESS);
         }
         Planner planner = findPlanner(plannerId);
+
         if (!planner.getUser().getId().equals(user.getId())) {
             throw new UnauthorizedException(ErrorCode.NO_ACCESS, "해당 플래너에 접근 할 수 없습니다.");
         }
@@ -72,18 +70,20 @@ public class PlannerService {
     }
 
     public GroupedCompletedPlannerResponse getCompletedPlannersGroupedByDate(User user) {
-        List<CompletedPlannerResponse> completedPlannerList = getAllCompletedPlanners(user);
-        Map<LocalDate, List<CompletedPlannerResponse>> groupedPlanners = completedPlannerList.stream()
+        CompletedPlannerListResponseData completedPlannerList = getAllCompletedPlanners(user);
+        Map<LocalDate, List<CompletedPlannerResponse>> groupedPlanners = completedPlannerList.getCompletedPlanners()
+                .stream()
                 .collect(Collectors.groupingBy(planner -> planner.getModifiedDate().toLocalDate()));
 
         return new GroupedCompletedPlannerResponse(groupedPlanners);
     }
 
-    private List<CompletedPlannerResponse> getAllCompletedPlanners(User user) {
+    private CompletedPlannerListResponseData getAllCompletedPlanners(User user) {
         List<Planner> completedPlanners = plannerRepository.findByIsCompletedAndUser(true, user);
-        return completedPlanners.stream()
+        List<CompletedPlannerResponse> completedPlannerResponses = completedPlanners.stream()
                 .map(CompletedPlannerResponse::fromPlanner)
                 .collect(Collectors.toList());
+        return new CompletedPlannerListResponseData(completedPlannerResponses);
     }
 
     private Planner findPlanner(UUID plannerId) {
