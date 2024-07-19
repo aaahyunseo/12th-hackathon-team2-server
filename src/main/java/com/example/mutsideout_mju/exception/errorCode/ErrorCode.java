@@ -21,6 +21,7 @@ public enum ErrorCode {
     DIARY_NOT_FOUND("4042","존재하지 않는 일기입니다."),
     PLANNER_NOT_FOUND("4043", "존재하지 않는 플랜입니다."),
 
+
     //ConflictException
     DUPLICATED_NAME("4091","이미 사용 중인 이름입니다."),
     DUPLICATED_EMAIL("4092", "이미 사용 중인 이메일입니다."),

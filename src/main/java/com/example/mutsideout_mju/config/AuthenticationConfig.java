@@ -21,7 +21,7 @@ public class AuthenticationConfig implements WebMvcConfigurer {
         registry.addInterceptor(authenticationInterceptor)
                 .addPathPatterns("/planners/**")
                 .addPathPatterns("/diaries/**")
-                .addPathPatterns("/survey/**")
+                .addPathPatterns("/surveys/**")
                 .addPathPatterns("/rooms/**")
                 .excludePathPatterns("/auth/**");
     }
