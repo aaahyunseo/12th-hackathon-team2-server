@@ -24,4 +24,10 @@ public class Planner extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    public void setCompleted(boolean a){
+        isCompleted = a;
+    }
+    public void setContent(String content){
+        this.content = content;
+    }
 }

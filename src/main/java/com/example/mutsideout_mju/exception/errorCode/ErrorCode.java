@@ -10,6 +10,7 @@ public enum ErrorCode {
     INVALID_PASSWORD("4010", "유효하지 않은 비밀번호입니다."),
     COOKIE_NOT_FOUND("4011", "쿠키를 찾을 수 없습니다."),
     INVALID_TOKEN("4012", "유효하지 않은 토큰입니다."),
+    INVALID_PLANNER_ACCESS("4013", "유효하지 않는 상태 입니다."),
 
     //ForbiddenException
     NO_ACCESS("4030", "접근 권한이 없습니다."),
@@ -18,6 +19,7 @@ public enum ErrorCode {
     USER_NOT_FOUND("4040","존재하지 않는 사용자입니다."),
     NOT_FOUND_PAGE("4041","존재하지 않는 페이지입니다."),
     DIARY_NOT_FOUND("4042","존재하지 않는 일기입니다."),
+    PLANNER_NOT_FOUND("4043", "존재하지 않는 플랜입니다."),
 
     //ConflictException
     DUPLICATED_NAME("4091","이미 사용 중인 이름입니다."),
