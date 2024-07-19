@@ -45,33 +45,30 @@ public class PlannerService {
         this.plannerRepository.save(planner);
     }
 
-    public Planner updatePlanner(PlannerDto plannerDto, UUID plannerId, User user) {
+    public void updatePlanner(PlannerDto plannerDto, UUID plannerId, User user) {
         Planner planner = findPlanner(plannerId);
 
+        if(!planner.isCompleted()){
+            throw new UnauthorizedException(ErrorCode.INVALID_PLANNER_ACCESS);
+        }
         if (!planner.getUser().getId().equals(user.getId())) {
             throw new UnauthorizedException(ErrorCode.NO_ACCESS, "해당 플래너에 접근 할 수 없습니다.");
         }
 
         planner.setContent(plannerDto.getContent());
-        return plannerRepository.save(planner);
+        plannerRepository.save(planner);
     }
 
     public void completePlannerById(UUID plannerId, CompletePlannerRequestDto requestDto, User user) {
         if (!requestDto.getIsCompleted()) {
             throw new UnauthorizedException(ErrorCode.INVALID_PLANNER_ACCESS);
         }
-        Optional<Planner> optionalPlanner = plannerRepository.findById(plannerId);
-        if (optionalPlanner.isPresent()) {
-            Planner planner = optionalPlanner.get();
-
-            if (!planner.getUser().getId().equals(user.getId())) {
-                throw new UnauthorizedException(ErrorCode.NO_ACCESS, "해당 플래너에 접근 할 수 없습니다.");
-            }
-            planner.setCompleted(requestDto.getIsCompleted());
-            plannerRepository.save(planner);
-        } else {
-            throw new RuntimeException("Planner not found");
+        Planner planner = findPlanner(plannerId);
+        if (!planner.getUser().getId().equals(user.getId())) {
+            throw new UnauthorizedException(ErrorCode.NO_ACCESS, "해당 플래너에 접근 할 수 없습니다.");
         }
+        planner.setCompleted(requestDto.getIsCompleted());
+        plannerRepository.save(planner);
     }
 
     public GroupedCompletedPlannerResponse getCompletedPlannersGroupedByDate(User user) {
