@@ -19,11 +19,8 @@ public class AuthenticationConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
         registry.addInterceptor(authenticationInterceptor)
-                .addPathPatterns("/planners/**")
-                .addPathPatterns("/diaries/**")
-                .addPathPatterns("/surveys/**")
-                .addPathPatterns("/rooms/**")
-                .excludePathPatterns("/auth/**");
+                .addPathPatterns("/planners/**", "/diaries/**", "/rooms/**", "/surveys/**", "/auth/logout")
+                .excludePathPatterns("/auth/signup", "/auth/login", "/questions");
     }
 
     @Override
