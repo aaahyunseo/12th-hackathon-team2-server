@@ -54,11 +54,10 @@ public class PlannerService {
     }
 
     public void completePlannerById(UUID plannerId, CompletePlannerRequestDto requestDto, User user) {
-        if (!requestDto.getIsCompleted()) {
+        Planner planner = findPlanner(plannerId);
+        if (!requestDto.getIsCompleted() || planner.isCompleted()) {
             throw new UnauthorizedException(ErrorCode.INVALID_PLANNER_ACCESS);
         }
-
-        Planner planner = findPlanner(plannerId);
         validateUserAccess(planner, user);
         planner.setCompleted(requestDto.getIsCompleted());
         plannerRepository.save(planner);
