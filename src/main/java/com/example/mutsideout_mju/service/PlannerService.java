@@ -44,14 +44,11 @@ public class PlannerService {
 
     public void updatePlanner(PlannerDto plannerDto, UUID plannerId, User user) {
         Planner planner = findPlanner(plannerId);
-
-        if(planner.isCompleted()){
+        if (planner.isCompleted()) {
             throw new UnauthorizedException(ErrorCode.INVALID_PLANNER_ACCESS);
         }
-        if (!planner.getUser().getId().equals(user.getId())) {
-            throw new UnauthorizedException(ErrorCode.NO_ACCESS, "해당 플래너에 접근 할 수 없습니다.");
-        }
 
+        validateUserAccess(planner, user);
         planner.setContent(plannerDto.getContent());
         plannerRepository.save(planner);
     }
@@ -60,11 +57,9 @@ public class PlannerService {
         if (!requestDto.getIsCompleted()) {
             throw new UnauthorizedException(ErrorCode.INVALID_PLANNER_ACCESS);
         }
-        Planner planner = findPlanner(plannerId);
 
-        if (!planner.getUser().getId().equals(user.getId())) {
-            throw new UnauthorizedException(ErrorCode.NO_ACCESS, "해당 플래너에 접근 할 수 없습니다.");
-        }
+        Planner planner = findPlanner(plannerId);
+        validateUserAccess(planner, user);
         planner.setCompleted(requestDto.getIsCompleted());
         plannerRepository.save(planner);
     }
@@ -83,11 +78,18 @@ public class PlannerService {
         List<CompletedPlannerResponse> completedPlannerResponses = completedPlanners.stream()
                 .map(CompletedPlannerResponse::fromPlanner)
                 .collect(Collectors.toList());
+
         return new CompletedPlannerListResponseData(completedPlannerResponses);
     }
 
     private Planner findPlanner(UUID plannerId) {
         return plannerRepository.findById(plannerId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.PLANNER_NOT_FOUND));
+    }
+
+    private void validateUserAccess(Planner planner, User user) {
+        if (!planner.getUser().getId().equals(user.getId())) {
+            throw new UnauthorizedException(ErrorCode.NO_ACCESS, "해당 플래너에 접근 할 수 없습니다.");
+        }
     }
 }
