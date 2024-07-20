@@ -23,8 +23,10 @@ public enum ErrorCode {
     SURVEY_NOT_FOUND("4044", "존재하지 않는 설문입니다."),
 
     //ConflictException
-    DUPLICATED_NAME("4091","이미 사용 중인 이름입니다."),
-    DUPLICATED_EMAIL("4092", "이미 사용 중인 이메일입니다."),
+    DUPLICATED_NAME("4090","이미 사용 중인 이름입니다."),
+    DUPLICATED_EMAIL("4091", "이미 사용 중인 이메일입니다."),
+    DUPLICATED_SURVEY_ID("4092", "중복된 설문에 답하셨습니다."),
+    SURVEY_ALREADY_PARTICIPATED("4093", "이미 설문조사에 참여하였습니다."),
 
     //ValidationException
     NOT_NULL("9001", "필수값이 누락되었습니다."),
