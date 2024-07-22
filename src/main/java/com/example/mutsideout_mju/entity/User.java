@@ -35,4 +35,18 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Room> rooms;
+
+    public void setUserGrade(Grade userGrade) {
+        this.userGrade = userGrade;
+    }
+
+    public Grade determineGrade(long count) {
+        if (count >= 4) {
+            return Grade.TOMATO;
+        } else if (count >= 2) {
+            return Grade.BANANA;
+        } else {
+            return Grade.AVOCADO;
+        }
+    }
 }
