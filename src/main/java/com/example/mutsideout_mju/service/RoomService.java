@@ -5,6 +5,7 @@ import com.example.mutsideout_mju.dto.request.room.CreateRoomDto;
 import com.example.mutsideout_mju.dto.request.room.UpdateRoomDto;
 import com.example.mutsideout_mju.dto.response.room.RoomListResponseData;
 import com.example.mutsideout_mju.dto.response.room.RoomResponseData;
+import com.example.mutsideout_mju.dto.response.room.RoomResponseDto;
 import com.example.mutsideout_mju.entity.Room;
 import com.example.mutsideout_mju.entity.User;
 import com.example.mutsideout_mju.exception.ForbiddenException;
@@ -18,7 +19,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +34,14 @@ public class RoomService {
         //요청받은 페이지 번호, 페이지 크기, 작성순으로 정렬
         Pageable pageable = PageRequest.of(paginationDto.getPage(), paginationDto.getPAGE_SIZE(), Sort.by(Sort.Order.desc("createdAt")));
 
-        Page<Room> roomPage = roomRepository.findAll(pageable);  //해당 페이지 데이터를 모두 가져옴
+        // 24시간이 지난 방 삭제
+        List<Room> deactivatedRooms = roomRepository.findAll().stream()
+                .filter(room -> room.getCreatedAt().isBefore(LocalDateTime.now().minusHours(24)))
+                .collect(Collectors.toList());
+        roomRepository.deleteAll(deactivatedRooms);
+
+        // 비활성화 된 방 삭제 후 해당 페이지 데이터를 모두 가져옴
+        Page<Room> roomPage = roomRepository.findAll(pageable);
 
         if(roomPage.getTotalPages() <= paginationDto.getPage() && paginationDto.getPage()!=0){
             throw new NotFoundException(ErrorCode.NOT_FOUND_PAGE);
@@ -42,6 +53,11 @@ public class RoomService {
     //집중 세션 방 상세 조회
     public RoomResponseData getRoomById(UUID roomId){
         Room room = findRoomById(roomId);
+        //현재 시각으로 부터 방 생성 시간이 24시간 이후이면 false(비활성화)로 방 삭제
+        if(!room.getCreatedAt().isAfter(LocalDateTime.now().minusHours(24))){
+            roomRepository.deleteById(roomId);
+            throw new NotFoundException(ErrorCode.ROOM_NOT_FOUND);
+        }
         return RoomResponseData.roomResponseData(room);
     }
 
