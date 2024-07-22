@@ -25,7 +25,7 @@ public class SurveyController {
 
     @PostMapping
     public ResponseEntity<ResponseDto<UserGradeResponseDto>> saveSurveyResults(@AuthenticatedUser User user,
-                                                               @RequestBody @Valid SurveyResultListDto surveyResultListDto) {
+                                                                               @RequestBody @Valid SurveyResultListDto surveyResultListDto) {
         surveyService.saveSurveyResults(user, surveyResultListDto);
         UserGradeResponseDto userGradeResponseDto = userService.calculateUserGrade(user);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "설문조사 저장 및 유저 등급 반환 완료", userGradeResponseDto), HttpStatus.OK);
