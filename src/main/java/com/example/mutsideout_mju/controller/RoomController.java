@@ -26,9 +26,9 @@ public class RoomController {
 
     //집중 세션 방 전체 목록 조회
     @GetMapping
-    public ResponseEntity<ResponseDto<RoomListResponseData>> getDiaryList(@AuthenticatedUser User user, @RequestParam(value = "page", defaultValue = "1") int page){
+    public ResponseEntity<ResponseDto<RoomListResponseData>> getDiaryList(@RequestParam(value = "page", defaultValue = "1") int page){
         PaginationDto paginationDto = new PaginationDto(page);
-        RoomListResponseData roomListResponseData = roomService.getRoomList(user, paginationDto);
+        RoomListResponseData roomListResponseData = roomService.getRoomList(paginationDto);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK,"집중 세션 방 전체 목록 조회에 성공하였습니다.", roomListResponseData), HttpStatus.OK);
     }
 

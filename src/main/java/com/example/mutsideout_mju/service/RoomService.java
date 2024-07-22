@@ -11,7 +11,6 @@ import com.example.mutsideout_mju.exception.ForbiddenException;
 import com.example.mutsideout_mju.exception.NotFoundException;
 import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.repository.RoomRepository;
-import com.example.mutsideout_mju.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,10 +24,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class RoomService {
     private final RoomRepository roomRepository;
-    private final UserRepository userRepository;
 
     //집중 세션 방 전체 목록 조회
-    public RoomListResponseData getRoomList(User user, PaginationDto paginationDto){
+    public RoomListResponseData getRoomList(PaginationDto paginationDto){
         //요청받은 페이지 번호, 페이지 크기, 작성순으로 정렬
         Pageable pageable = PageRequest.of(paginationDto.getPage(), paginationDto.getPAGE_SIZE(), Sort.by(Sort.Order.desc("createdAt")));
 
