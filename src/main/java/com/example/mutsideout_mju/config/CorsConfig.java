@@ -13,6 +13,7 @@ public class CorsConfig implements WebMvcConfigurer {
     private final long MAX_AGE_SECS = 3600;
     @Value("${client.host}")
     private List<String> clientHosts;
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
