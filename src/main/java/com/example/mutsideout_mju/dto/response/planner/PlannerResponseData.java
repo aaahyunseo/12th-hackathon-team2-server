@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Getter
@@ -22,7 +23,7 @@ public class PlannerResponseData {
                 planner.getId(),
                 planner.getContent(),
                 planner.isCompleted(),
-                planner.getModifiedDate().toString()
+                planner.getModifiedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         );
     }
 }
