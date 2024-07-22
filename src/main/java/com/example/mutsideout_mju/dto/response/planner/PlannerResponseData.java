@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Getter
@@ -15,14 +16,14 @@ public class PlannerResponseData {
     private final UUID plannerId;
     private final String content;
     private final boolean isCompleted;
-    private final LocalDateTime createdAt;
+    private final String createdAt;
 
     public static PlannerResponseData fromPlanner(Planner planner) {
         return new PlannerResponseData(
                 planner.getId(),
                 planner.getContent(),
                 planner.isCompleted(),
-                planner.getModifiedDate()
+                planner.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         );
     }
 }

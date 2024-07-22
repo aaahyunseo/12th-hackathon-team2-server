@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.xml.bind.ValidationException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -65,9 +66,9 @@ public class PlannerService {
 
     public GroupedCompletedPlannerResponse getCompletedPlannersGroupedByDate(User user) {
         CompletedPlannerListResponseData completedPlannerList = getAllCompletedPlanners(user);
-        Map<LocalDate, List<CompletedPlannerResponse>> groupedPlanners = completedPlannerList.getCompletedPlanners()
+        Map<String, List<CompletedPlannerResponse>> groupedPlanners = completedPlannerList.getCompletedPlanners()
                 .stream()
-                .collect(Collectors.groupingBy(planner -> planner.getModifiedDate().toLocalDate()));
+                .collect(Collectors.groupingBy(planner -> planner.getModifiedDate().formatted(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
 
         return new GroupedCompletedPlannerResponse(groupedPlanners);
     }
