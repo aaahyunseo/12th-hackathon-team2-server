@@ -23,7 +23,7 @@ public class PlannerResponseData {
                 planner.getId(),
                 planner.getContent(),
                 planner.isCompleted(),
-                planner.getModifiedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                planner.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         );
     }
 }
