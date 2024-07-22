@@ -15,14 +15,14 @@ public class PlannerResponseData {
     private final UUID plannerId;
     private final String content;
     private final boolean isCompleted;
-    private final LocalDateTime createdAt;
+    private final String createdAt;
 
     public static PlannerResponseData fromPlanner(Planner planner) {
         return new PlannerResponseData(
                 planner.getId(),
                 planner.getContent(),
                 planner.isCompleted(),
-                planner.getModifiedDate()
+                planner.getModifiedDate().toString()
         );
     }
 }

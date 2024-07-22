@@ -65,9 +65,9 @@ public class PlannerService {
 
     public GroupedCompletedPlannerResponse getCompletedPlannersGroupedByDate(User user) {
         CompletedPlannerListResponseData completedPlannerList = getAllCompletedPlanners(user);
-        Map<LocalDate, List<CompletedPlannerResponse>> groupedPlanners = completedPlannerList.getCompletedPlanners()
+        Map<String, List<CompletedPlannerResponse>> groupedPlanners = completedPlannerList.getCompletedPlanners()
                 .stream()
-                .collect(Collectors.groupingBy(planner -> planner.getModifiedDate().toLocalDate()));
+                .collect(Collectors.groupingBy(planner -> planner.getModifiedDate().toString()));
 
         return new GroupedCompletedPlannerResponse(groupedPlanners);
     }

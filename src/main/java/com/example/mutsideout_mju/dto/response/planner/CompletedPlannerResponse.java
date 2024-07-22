@@ -16,7 +16,7 @@ public class CompletedPlannerResponse {
     private final UUID plannerId;
     private final String content;
     private final boolean isCompleted;
-    private final LocalDateTime modifiedDate;
+    private final String modifiedDate;
     private final UUID userId;
 
     public static CompletedPlannerResponse fromPlanner(Planner planner) {
@@ -24,7 +24,7 @@ public class CompletedPlannerResponse {
                 planner.getId(),
                 planner.getContent(),
                 planner.isCompleted(),
-                planner.getModifiedDate(),
+                planner.getModifiedDate().toString(),
                 planner.getUser().getId()
         );
     }

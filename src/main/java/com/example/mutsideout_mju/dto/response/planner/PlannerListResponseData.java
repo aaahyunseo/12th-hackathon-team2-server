@@ -12,11 +12,4 @@ import java.util.List;
 @Builder
 public class PlannerListResponseData {
     private List<PlannerResponseData> plannerList;
-    public PlannerListResponseData() {
-        this.plannerList = new ArrayList<>();
-    }
-
-    public void addPlanner(PlannerResponseData plannerResponseData) {
-        this.plannerList.add(plannerResponseData);
-    }
 }
