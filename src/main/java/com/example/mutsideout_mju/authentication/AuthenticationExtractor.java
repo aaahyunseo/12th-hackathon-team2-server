@@ -15,7 +15,6 @@ public class AuthenticationExtractor {
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (TOKEN_COOKIE_NAME.equals(cookie.getName())) {
-                    log.info("extract cookie = {}", cookie.getValue());
                     return JwtEncoder.decode(String.valueOf(cookie.getValue()));
                 }
             }
