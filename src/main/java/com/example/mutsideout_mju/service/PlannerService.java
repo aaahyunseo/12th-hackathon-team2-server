@@ -11,9 +11,6 @@ import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.repository.PlannerRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import javax.xml.bind.ValidationException;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,7 +31,7 @@ public class PlannerService {
         return new PlannerListResponseData(plannerResponseDataList);
     }
 
-    public void createPlanner(PlannerDto plannerDto, User user) {
+    public void createPlanner(User user, PlannerDto plannerDto) {
         Planner planner = Planner.builder()
                 .content(plannerDto.getContent())
                 .isCompleted(false)
@@ -43,23 +40,22 @@ public class PlannerService {
         this.plannerRepository.save(planner);
     }
 
-    public void updatePlanner(PlannerDto plannerDto, UUID plannerId, User user) {
-        Planner planner = findPlanner(plannerId);
+    public void updatePlanner(User user, UUID plannerId, PlannerDto plannerDto) {
+        Planner planner = findPlanner(user.getId(), plannerId);
         if (planner.isCompleted()) {
             throw new UnauthorizedException(ErrorCode.INVALID_PLANNER_ACCESS);
         }
 
-        validateUserAccess(planner, user);
         planner.setContent(plannerDto.getContent());
         plannerRepository.save(planner);
     }
 
-    public void completePlannerById(UUID plannerId, CompletePlannerRequestDto requestDto, User user) {
-        Planner planner = findPlanner(plannerId);
+    public void completePlannerById(User user, UUID plannerId, CompletePlannerRequestDto requestDto) {
+        Planner planner = findPlanner(user.getId(), plannerId);
         if (!requestDto.getIsCompleted() || planner.isCompleted()) {
             throw new UnauthorizedException(ErrorCode.INVALID_PLANNER_ACCESS);
         }
-        validateUserAccess(planner, user);
+
         planner.setCompleted(requestDto.getIsCompleted());
         plannerRepository.save(planner);
     }
@@ -82,14 +78,8 @@ public class PlannerService {
         return new CompletedPlannerListResponseData(completedPlannerResponses);
     }
 
-    private Planner findPlanner(UUID plannerId) {
-        return plannerRepository.findById(plannerId)
+    private Planner findPlanner(UUID userId, UUID plannerId) {
+        return plannerRepository.findByUserIdAndId(userId, plannerId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.PLANNER_NOT_FOUND));
-    }
-
-    private void validateUserAccess(Planner planner, User user) {
-        if (!planner.getUser().getId().equals(user.getId())) {
-            throw new UnauthorizedException(ErrorCode.NO_ACCESS, "해당 플래너에 접근 할 수 없습니다.");
-        }
     }
 }
