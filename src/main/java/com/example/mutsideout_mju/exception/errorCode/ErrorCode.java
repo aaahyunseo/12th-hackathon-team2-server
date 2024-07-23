@@ -21,8 +21,6 @@ public enum ErrorCode {
     DIARY_NOT_FOUND("4042","존재하지 않는 일기입니다."),
     PLANNER_NOT_FOUND("4043", "존재하지 않는 플랜입니다."),
     SURVEY_NOT_FOUND("4044", "존재하지 않는 설문입니다."),
-
-
     ROOM_NOT_FOUND("4045","존재하지 않는 방입니다."),
 
     //ConflictException
