@@ -35,7 +35,7 @@ public class UserService {
     }
 
     public UserGradeResponseDto getUserGrade(User user) {
-        return UserGradeResponseDto.fromGradeOnly(user.getUserGrade());
+        return UserGradeResponseDto.from(user.getUserGrade());
     }
 
     public static boolean isValidSurveyOption(UserSurvey userSurvey) {
