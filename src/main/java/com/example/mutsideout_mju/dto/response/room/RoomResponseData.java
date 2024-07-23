@@ -4,7 +4,6 @@ import com.example.mutsideout_mju.entity.Room;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
@@ -17,7 +16,7 @@ public class RoomResponseData {
     private String content;
     private String createdAt;
 
-    public static RoomResponseData roomResponseData(Room room){
+    public static RoomResponseData from(Room room){
         return RoomResponseData.builder()
                 .id(room.getId())
                 .title(room.getTitle())

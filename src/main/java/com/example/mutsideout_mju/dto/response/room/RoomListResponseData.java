@@ -15,10 +15,10 @@ public class RoomListResponseData {
     private List<RoomResponseDto> roomList;
     private PaginationData pagination;
 
-    public static RoomListResponseData roomListResponseData(Page<Room> page){
+    public static RoomListResponseData from(Page<Room> page){
         return RoomListResponseData.builder()
                 .roomList(page.stream()
-                        .map(room -> RoomResponseDto.roomResponseDto(room))
+                        .map(room -> RoomResponseDto.fromRoom(room))
                         .collect(Collectors.toList()))
                 .pagination(PaginationData.paginationData(page))
                 .build();

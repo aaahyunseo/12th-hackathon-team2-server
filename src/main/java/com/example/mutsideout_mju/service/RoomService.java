@@ -46,7 +46,7 @@ public class RoomService {
             throw new NotFoundException(ErrorCode.NOT_FOUND_PAGE);
         }
 
-        return RoomListResponseData.roomListResponseData(roomPage);
+        return RoomListResponseData.from(roomPage);
     }
 
     //집중 세션 방 상세 조회
@@ -57,7 +57,7 @@ public class RoomService {
             roomRepository.deleteById(roomId);
             throw new NotFoundException(ErrorCode.ROOM_NOT_FOUND);
         }
-        return RoomResponseData.roomResponseData(room);
+        return RoomResponseData.from(room);
     }
 
     //집중 세션 방 생성
