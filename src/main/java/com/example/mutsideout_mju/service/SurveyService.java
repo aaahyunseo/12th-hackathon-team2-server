@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -27,6 +28,7 @@ public class SurveyService {
     public SurveyQuestionListResponseDto getAllSurveyQuestions() {
         List<SurveyQuestionData> surveyQuestionDataList = surveyRepository.findAll().stream()
                 .map(survey -> SurveyQuestionData.from(survey))
+                .sorted(Comparator.comparing(SurveyQuestionData::getNumber))
                 .collect(Collectors.toList());
         return SurveyQuestionListResponseDto.wrap(surveyQuestionDataList);
     }
