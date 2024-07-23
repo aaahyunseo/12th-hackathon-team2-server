@@ -40,7 +40,7 @@ public class DiaryService {
             throw new NotFoundException(ErrorCode.NOT_FOUND_PAGE);
         }
 
-        return DiaryListResponseData.diaryListResponseData(diaryPage);
+        return DiaryListResponseData.from(diaryPage);
     }
 
     //감정일기 상세 조회
@@ -49,7 +49,7 @@ public class DiaryService {
                 .filter(d -> d.getId().equals(diaryId))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException(ErrorCode.DIARY_NOT_FOUND));
-        return DiaryResponseData.diaryResponseData(diary);
+        return DiaryResponseData.from(diary);
     }
 
     //감정일기 작성
@@ -72,9 +72,8 @@ public class DiaryService {
     }
 
     //감정일기 삭제
-    public void deleteDiaryById(User user, UUID diaryId) {
-        Diary diary = findDiaryById(diaryId);
-        checkUser(user, diary);
+    public void deleteDiaryById(User user, UUID diaryId){
+        checkUser(user, findDiaryById(diaryId));
         diaryRepository.deleteById(diaryId);
     }
 

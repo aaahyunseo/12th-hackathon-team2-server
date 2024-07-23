@@ -15,11 +15,11 @@ public class DiaryListResponseData {
     private List<DiaryResponseDto> diaryList;
     private PaginationData pagination;
 
-    public static DiaryListResponseData diaryListResponseData(Page<Diary> page){
+    public static DiaryListResponseData from(Page<Diary> page){
         return DiaryListResponseData.builder()
                 .diaryList(page.stream()
                         //DiaryDto 형식으로 변환
-                        .map(diary -> DiaryResponseDto.diaryResponseDto(diary))
+                        .map(diary -> DiaryResponseDto.fromDiary(diary))
                         .collect(Collectors.toList()))
                 .pagination(PaginationData.paginationData(page))
                 .build();

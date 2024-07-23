@@ -4,7 +4,6 @@ import com.example.mutsideout_mju.entity.Diary;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
@@ -16,12 +15,12 @@ public class DiaryResponseData {
     private String content;
     private String createdAt;
 
-    public static DiaryResponseData diaryResponseData(Diary diary){
+    public static DiaryResponseData from(Diary diary){
         return DiaryResponseData.builder()
                 .id(diary.getId())
                 .title(diary.getTitle())
                 .content(diary.getContent())
-                .createdAt(diary.getCreatedAt().format(DateTimeFormatter.ofPattern("YYYY-MM-DD")))
+                .createdAt(diary.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                 .build();
     }
 }
