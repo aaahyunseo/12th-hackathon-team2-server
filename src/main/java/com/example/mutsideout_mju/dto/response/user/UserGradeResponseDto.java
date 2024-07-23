@@ -10,14 +10,14 @@ public class UserGradeResponseDto {
     private String name;
     private Grade grade;
 
-    public static UserGradeResponseDto fromUserDetails(String name, Grade grade) {
+    public static UserGradeResponseDto of(String name, Grade grade) {
         return UserGradeResponseDto.builder()
                 .name(name)
                 .grade(grade)
                 .build();
     }
 
-    public static UserGradeResponseDto fromGradeOnly(Grade grade) {
+    public static UserGradeResponseDto from(Grade grade) {
         return UserGradeResponseDto.builder()
                 .grade(grade)
                 .build();
