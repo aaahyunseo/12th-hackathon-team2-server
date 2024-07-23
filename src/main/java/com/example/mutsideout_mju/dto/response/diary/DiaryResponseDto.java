@@ -4,7 +4,6 @@ import com.example.mutsideout_mju.entity.Diary;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
@@ -16,7 +15,7 @@ public class DiaryResponseDto {
     private String title;
     private String createdAt;
 
-    public static DiaryResponseDto diaryResponseDto(Diary diary){
+    public static DiaryResponseDto fromDiary(Diary diary){
         return DiaryResponseDto.builder()
                 .id(diary.getId())
                 .title(diary.getTitle())
