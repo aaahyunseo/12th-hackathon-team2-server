@@ -34,6 +34,10 @@ public class UserService {
         return UserGradeResponseDto.of(user.getName(), grade);
     }
 
+    public UserGradeResponseDto getUserGrade(User user) {
+        return UserGradeResponseDto.from(user.getUserGrade());
+    }
+
     public static boolean isValidSurveyOption(UserSurvey userSurvey) {
         Long questionNumber = userSurvey.getSurvey().getNumber();
         SurveyOption option = userSurvey.getSurveyOption();
