@@ -10,10 +10,10 @@ public class PaginationData {
     private int totalPage;
     private int currentPage;
 
-    public static <T> PaginationData paginationData(Page<T> page){
-        return  PaginationData.builder()
+    public static <T> PaginationData paginationData(Page<T> page) {
+        return PaginationData.builder()
                 .totalPage(page.getTotalPages())
-                .currentPage(page.getNumber()+1)
+                .currentPage(page.getNumber() + 1)
                 .build();
     }
 }
