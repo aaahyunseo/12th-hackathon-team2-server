@@ -31,7 +31,11 @@ public class UserService {
         user.setUserGrade(grade);
         userRepository.save(user);
 
-        return UserGradeResponseDto.of(user.getName(), grade);
+        return UserGradeResponseDto.fromUserDetails(user.getName(), grade);
+    }
+
+    public UserGradeResponseDto getUserGrade(User user) {
+        return UserGradeResponseDto.fromGradeOnly(user.getUserGrade());
     }
 
     public static boolean isValidSurveyOption(UserSurvey userSurvey) {
