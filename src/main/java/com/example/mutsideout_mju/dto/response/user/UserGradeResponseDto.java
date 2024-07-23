@@ -17,7 +17,7 @@ public class UserGradeResponseDto {
                 .build();
     }
 
-    public static UserGradeResponseDto from(Grade grade) {
+    public static UserGradeResponseDto fromGradeOnly(Grade grade) {
         return UserGradeResponseDto.builder()
                 .grade(grade)
                 .build();
