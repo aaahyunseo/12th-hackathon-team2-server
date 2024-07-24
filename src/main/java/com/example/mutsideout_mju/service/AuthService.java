@@ -61,7 +61,7 @@ public class AuthService {
 
         // 비밀번호 검증
         if (!passwordHashEncryption.matches(loginDto.getPassword(), user.getPassword())) {
-            throw new UnauthorizedException(ErrorCode.INVALID_PASSWORD);
+            throw new UnauthorizedException(ErrorCode.INVALID_EMAIL_OR_PASSWORD);
         }
 
         // 토큰 생성
@@ -76,6 +76,6 @@ public class AuthService {
     }
 
     private User findExistingUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+        return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorCode.INVALID_EMAIL_OR_PASSWORD));
     }
 }
