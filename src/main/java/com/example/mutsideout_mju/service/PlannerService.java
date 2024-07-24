@@ -11,7 +11,6 @@ import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.repository.PlannerRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,14 +25,13 @@ public class PlannerService {
 
         List<PlannerResponseData> plannerResponseDataList = allPlanners.stream()
                 .filter(planner -> !planner.isCompleted())
-                .sorted(Comparator.comparing(Planner::getCreatedAt).reversed())
                 .map(PlannerResponseData::fromPlanner)
                 .collect(Collectors.toList());
 
         return new PlannerListResponseData(plannerResponseDataList);
     }
 
-    public void createPlanner(PlannerDto plannerDto, User user) {
+    public void createPlanner(User user, PlannerDto plannerDto) {
         Planner planner = Planner.builder()
                 .content(plannerDto.getContent())
                 .isCompleted(false)
@@ -42,66 +40,46 @@ public class PlannerService {
         this.plannerRepository.save(planner);
     }
 
-    public void updatePlanner(PlannerDto plannerDto, UUID plannerId, User user) {
-        Planner planner = findPlanner(plannerId);
+    public void updatePlanner(User user, UUID plannerId, PlannerDto plannerDto) {
+        Planner planner = findPlanner(user.getId(), plannerId);
         if (planner.isCompleted()) {
             throw new UnauthorizedException(ErrorCode.INVALID_PLANNER_ACCESS);
         }
 
-        validateUserAccess(planner, user);
         planner.setContent(plannerDto.getContent());
         plannerRepository.save(planner);
     }
 
-    public void completePlannerById(UUID plannerId, CompletePlannerRequestDto requestDto, User user) {
-        Planner planner = findPlanner(plannerId);
+    public void completePlannerById(User user, UUID plannerId, CompletePlannerRequestDto requestDto) {
+        Planner planner = findPlanner(user.getId(), plannerId);
         if (!requestDto.getIsCompleted() || planner.isCompleted()) {
             throw new UnauthorizedException(ErrorCode.INVALID_PLANNER_ACCESS);
         }
-        validateUserAccess(planner, user);
+
         planner.setCompleted(requestDto.getIsCompleted());
         plannerRepository.save(planner);
     }
 
     public GroupedCompletedPlannerResponse getCompletedPlannersGroupedByDate(User user) {
         CompletedPlannerListResponseData completedPlannerList = getAllCompletedPlanners(user);
-
         Map<String, List<CompletedPlannerResponse>> groupedPlanners = completedPlannerList.getCompletedPlanners()
                 .stream()
-                .sorted(Comparator.comparing(CompletedPlannerResponse::getModifiedDate).reversed())
-                .collect(Collectors.groupingBy(planner -> planner.getModifiedDate().toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+                .collect(Collectors.groupingBy(planner -> planner.getModifiedDate().formatted(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
 
-        Map<String, List<CompletedPlannerResponseForClient>> sortedGroupedPlanners = new LinkedHashMap<>();
-        groupedPlanners.entrySet().stream()
-                .sorted(Map.Entry.<String, List<CompletedPlannerResponse>>comparingByKey().reversed())
-                .forEachOrdered(entry -> {
-                    List<CompletedPlannerResponseForClient> sortedPlanners = entry.getValue().stream()
-                            .map(CompletedPlannerResponse::toClientResponse)
-                            .sorted(Comparator.comparing(CompletedPlannerResponseForClient::getFormattedDate).reversed())
-                            .collect(Collectors.toList());
-                    sortedGroupedPlanners.put(entry.getKey(), sortedPlanners);
-                });
-
-        return new GroupedCompletedPlannerResponse(sortedGroupedPlanners);
+        return new GroupedCompletedPlannerResponse(groupedPlanners);
     }
 
-
-    public CompletedPlannerListResponseData getAllCompletedPlanners(User user) {
+    private CompletedPlannerListResponseData getAllCompletedPlanners(User user) {
         List<Planner> completedPlanners = plannerRepository.findByIsCompletedAndUser(true, user);
         List<CompletedPlannerResponse> completedPlannerResponses = completedPlanners.stream()
                 .map(CompletedPlannerResponse::fromPlanner)
                 .collect(Collectors.toList());
+
         return new CompletedPlannerListResponseData(completedPlannerResponses);
     }
 
-    private Planner findPlanner(UUID plannerId) {
-        return plannerRepository.findById(plannerId)
+    private Planner findPlanner(UUID userId, UUID plannerId) {
+        return plannerRepository.findByUserIdAndId(userId, plannerId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.PLANNER_NOT_FOUND));
-    }
-
-    private void validateUserAccess(Planner planner, User user) {
-        if (!planner.getUser().getId().equals(user.getId())) {
-            throw new UnauthorizedException(ErrorCode.NO_ACCESS, "해당 플래너에 접근 할 수 없습니다.");
-        }
     }
 }

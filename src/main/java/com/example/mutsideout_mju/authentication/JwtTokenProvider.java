@@ -47,7 +47,6 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token)
                     .getBody()
                     .getSubject();
-            log.info("payload 값={}", payload);
             return payload;
         } catch (JwtException e) {
             throw new UnauthorizedException(ErrorCode.INVALID_TOKEN, e.getMessage());

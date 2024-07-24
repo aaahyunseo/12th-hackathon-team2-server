@@ -10,5 +10,5 @@ public interface UserSurveyRepository extends JpaRepository<UserSurvey, UUID> {
     List<UserSurvey> findByUserId(UUID userId);
 
     boolean existsByUserId(UUID userId);
-    boolean existsByUserIdAndSurveyId(UUID userId, UUID surveyId);
+    List<UserSurvey> findByUserIdAndSurveyIdIn(UUID userId, List<UUID> surveyIds);
 }
