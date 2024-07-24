@@ -17,7 +17,7 @@ public class CompletedPlannerResponse {
     private final UUID plannerId;
     private final String content;
     private final boolean isCompleted;
-    private final String modifiedDate;
+    private final LocalDateTime modifiedDate;
     private final UUID userId;
 
     public static CompletedPlannerResponse fromPlanner(Planner planner) {
@@ -25,8 +25,11 @@ public class CompletedPlannerResponse {
                 planner.getId(),
                 planner.getContent(),
                 planner.isCompleted(),
-                planner.getModifiedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                planner.getModifiedDate(),
                 planner.getUser().getId()
         );
+    }
+    public String formatModifiedDate() {
+        return this.modifiedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 }

@@ -28,6 +28,7 @@ public class PlannerService {
 
         List<PlannerResponseData> plannerResponseDataList = allPlanners.stream()
                 .filter(planner -> !planner.isCompleted())
+                .sorted(Comparator.comparing(Planner::getCreatedAt).reversed())
                 .map(PlannerResponseData::fromPlanner)
                 .collect(Collectors.toList());
 
@@ -66,19 +67,30 @@ public class PlannerService {
 
     public GroupedCompletedPlannerResponse getCompletedPlannersGroupedByDate(User user) {
         CompletedPlannerListResponseData completedPlannerList = getAllCompletedPlanners(user);
+
         Map<String, List<CompletedPlannerResponse>> groupedPlanners = completedPlannerList.getCompletedPlanners()
                 .stream()
-                .collect(Collectors.groupingBy(planner -> planner.getModifiedDate().formatted(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+                .sorted(Comparator.comparing(CompletedPlannerResponse::getModifiedDate).reversed())
+                .collect(Collectors.groupingBy(planner -> planner.getModifiedDate().toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
 
-        return new GroupedCompletedPlannerResponse(groupedPlanners);
+        Map<String, List<CompletedPlannerResponse>> sortedGroupedPlanners = new LinkedHashMap<>();
+        groupedPlanners.entrySet().stream()
+                .sorted(Map.Entry.<String, List<CompletedPlannerResponse>>comparingByKey().reversed())
+                .forEachOrdered(entry -> {
+                    List<CompletedPlannerResponse> sortedPlanners = entry.getValue().stream()
+                            .sorted(Comparator.comparing(CompletedPlannerResponse::getModifiedDate).reversed())
+                            .collect(Collectors.toList());
+                    sortedGroupedPlanners.put(entry.getKey(), sortedPlanners);
+                });
+
+        return new GroupedCompletedPlannerResponse(sortedGroupedPlanners);
     }
 
-    private CompletedPlannerListResponseData getAllCompletedPlanners(User user) {
+    public CompletedPlannerListResponseData getAllCompletedPlanners(User user) {
         List<Planner> completedPlanners = plannerRepository.findByIsCompletedAndUser(true, user);
         List<CompletedPlannerResponse> completedPlannerResponses = completedPlanners.stream()
                 .map(CompletedPlannerResponse::fromPlanner)
                 .collect(Collectors.toList());
-
         return new CompletedPlannerListResponseData(completedPlannerResponses);
     }
 
