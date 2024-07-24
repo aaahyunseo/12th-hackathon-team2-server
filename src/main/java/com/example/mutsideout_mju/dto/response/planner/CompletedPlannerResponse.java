@@ -20,24 +20,22 @@ public class CompletedPlannerResponse {
     private final UUID userId;
 
     public static CompletedPlannerResponse fromPlanner(Planner planner) {
-        return new CompletedPlannerResponse(
-                planner.getId(),
-                planner.getContent(),
-                planner.isCompleted(),
-                planner.getModifiedDate(),
-                planner.getUser().getId()
-        );
+        return CompletedPlannerResponse.builder()
+                .plannerId(planner.getId())
+                .content(planner.getContent())
+                .isCompleted(planner.isCompleted())
+                .modifiedDate(planner.getModifiedDate())
+                .userId(planner.getUser().getId())
+                .build();
     }
-    public String getFormattedDate() {
-        return this.modifiedDate.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    }
+
     public CompletedPlannerResponseForClient toClientResponse() {
         return CompletedPlannerResponseForClient.builder()
                 .plannerId(this.plannerId)
                 .content(this.content)
-                .isCompleted(this.isCompleted)
-                .formattedDate(this.modifiedDate.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                .modifiedDate(this.modifiedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                 .userId(this.userId)
+                .isCompleted(this.isCompleted)
                 .build();
     }
 }

@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Getter
@@ -13,6 +15,8 @@ public class CompletedPlannerResponseForClient {
     private final UUID plannerId;
     private final String content;
     private final boolean isCompleted;
-    private final String formattedDate;
+    private final String modifiedDate;
     private final UUID userId;
+
 }
+

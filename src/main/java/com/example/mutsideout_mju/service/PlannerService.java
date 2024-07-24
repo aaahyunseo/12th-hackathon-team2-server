@@ -75,7 +75,7 @@ public class PlannerService {
                 .forEachOrdered(entry -> {
                     List<CompletedPlannerResponseForClient> sortedPlanners = entry.getValue().stream()
                             .map(CompletedPlannerResponse::toClientResponse)
-                            .sorted(Comparator.comparing(CompletedPlannerResponseForClient::getFormattedDate).reversed())
+                            .sorted(Comparator.comparing(CompletedPlannerResponseForClient::getModifiedDate).reversed())
                             .collect(Collectors.toList());
                     sortedGroupedPlanners.put(entry.getKey(), sortedPlanners);
                 });
