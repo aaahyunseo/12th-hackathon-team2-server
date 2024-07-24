@@ -26,25 +26,27 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<ResponseDto<Void>> signup(@RequestBody @Valid SignupDto signupDto) {
-        authService.signup(signupDto);
+    public ResponseEntity<ResponseDto<Void>> signup(@RequestBody @Valid SignupDto signupDto, HttpServletResponse response) {
+        TokenResponseDto tokenResponseDto = authService.signup(signupDto);
+        setCookie(response, JwtEncoder.encode(tokenResponseDto.getAccessToken()));
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.CREATED, "회원가입 완료"), HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
     public ResponseEntity<ResponseDto<Void>> login(@RequestBody @Valid LoginDto loginDto, HttpServletResponse response) {
         TokenResponseDto tokenResponseDto = authService.login(loginDto);
-        String token = JwtEncoder.encode(tokenResponseDto.getAccessToken());
+        setCookie(response, JwtEncoder.encode(tokenResponseDto.getAccessToken()));
+        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "로그인 완료"), HttpStatus.OK);
+    }
 
-        ResponseCookie cookie = ResponseCookie.from(AuthenticationExtractor.TOKEN_COOKIE_NAME, token)
+    private static void setCookie(HttpServletResponse response, String accessToken) {
+        ResponseCookie cookie = ResponseCookie.from(AuthenticationExtractor.TOKEN_COOKIE_NAME, accessToken)
                 .maxAge(Duration.ofMillis(1800000))
                 .path("/")
                 .httpOnly(true)
                 .sameSite("None").secure(true)
                 .build();
         response.addHeader("set-cookie", cookie.toString());
-
-        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "로그인 완료"), HttpStatus.OK);
     }
 
     @GetMapping("/logout")

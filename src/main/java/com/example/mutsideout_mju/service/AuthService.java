@@ -26,7 +26,7 @@ public class AuthService {
     /**
      * 회원가입
      */
-    public void signup(SignupDto signupDto) {
+    public TokenResponseDto signup(SignupDto signupDto) {
 
         // 중복 이름 회원가입 방지
         if (userRepository.findByName(signupDto.getName()).isPresent()) {
@@ -48,6 +48,8 @@ public class AuthService {
                 .name(signupDto.getName())
                 .build();
         userRepository.save(newUser);
+
+        return createToken(newUser);
     }
 
     /**
@@ -63,6 +65,10 @@ public class AuthService {
         }
 
         // 토큰 생성
+        return createToken(user);
+    }
+
+    private TokenResponseDto createToken(User user) {
         String payload = String.valueOf(user.getId());
         String accessToken = jwtTokenProvider.createToken(payload);
 
