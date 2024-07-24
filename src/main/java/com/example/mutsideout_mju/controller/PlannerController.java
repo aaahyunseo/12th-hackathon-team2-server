@@ -36,14 +36,14 @@ public class PlannerController {
     // 새 planner 생성
     @PostMapping
     public ResponseEntity<ResponseDto<Void>> createPlanner(@AuthenticatedUser User user, @RequestBody @Valid PlannerDto plannerDto) {
-        plannerService.createPlanner(plannerDto, user);
+        plannerService.createPlanner(user, plannerDto);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.CREATED, "plan created"), HttpStatus.CREATED);
     }
 
     // planner 수정
     @PatchMapping("/{plannerId}")
     public ResponseEntity<ResponseDto<Void>> updatePlanner(@AuthenticatedUser User user, @RequestBody @Valid PlannerDto plannerDto, @PathVariable UUID plannerId) {
-        plannerService.updatePlanner(plannerDto, plannerId, user);
+        plannerService.updatePlanner(user, plannerId, plannerDto);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "plan updated"), HttpStatus.OK);
     }
 
@@ -60,7 +60,7 @@ public class PlannerController {
             @AuthenticatedUser User user,
             @RequestBody @Valid CompletePlannerRequestDto requestDto,
             @PathVariable UUID plannerId) {
-        plannerService.completePlannerById(plannerId, requestDto, user);
+        plannerService.completePlannerById(user, plannerId, requestDto);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "complete plan"), HttpStatus.OK);
     }
 }

@@ -1,6 +1,5 @@
 package com.example.mutsideout_mju.service;
 
-import com.example.mutsideout_mju.dto.request.survey.SurveyResult;
 import com.example.mutsideout_mju.dto.request.survey.SurveyResultListDto;
 import com.example.mutsideout_mju.dto.response.survey.SurveyQuestionData;
 import com.example.mutsideout_mju.dto.response.survey.SurveyQuestionListResponseDto;
@@ -13,7 +12,6 @@ import com.example.mutsideout_mju.repository.UserSurveyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -39,19 +37,31 @@ public class SurveyService {
         if (userSurveyRepository.existsByUserId(user.getId())) {
             throw new ConflictException(ErrorCode.SURVEY_ALREADY_PARTICIPATED);
         }
-        surveyResultListDto.getSurveyResultList().forEach(surveyResult -> {
-            // 같은 설문에 답변했는지 중복 필드 검증
-            if (userSurveyRepository.existsByUserIdAndSurveyId(user.getId(), UUID.fromString(surveyResult.getSurveyId()))) {
-                throw new ConflictException(ErrorCode.DUPLICATED_SURVEY_ID);
-            }
-            Survey survey = findExistingSurvey(UUID.fromString(surveyResult.getSurveyId()));
-            UserSurvey userSurvey = UserSurvey.builder()
-                    .user(user)
-                    .survey(survey)
-                    .surveyOption(surveyResult.getOption())
-                    .build();
-            userSurveyRepository.save(userSurvey);
-        });
+
+        // 설문 ID들 추출
+        List<UUID> surveyIds = surveyResultListDto.getSurveyResultList().stream()
+                .map(result -> UUID.fromString(result.getSurveyId()))
+                .collect(Collectors.toList());
+
+        // 해당 사용자가 제출한 설문 중복 검사
+        List<UserSurvey> existingSurveys = userSurveyRepository.findByUserIdAndSurveyIdIn(user.getId(), surveyIds);
+        if (!existingSurveys.isEmpty()) {
+            throw new ConflictException(ErrorCode.DUPLICATED_SURVEY_ID);
+        }
+
+        // 설문 결과 저장
+        List<UserSurvey> userSurveys = surveyResultListDto.getSurveyResultList()
+                .stream()
+                .map(surveyResult -> {
+                    Survey survey = findExistingSurvey(UUID.fromString(surveyResult.getSurveyId()));
+                    return UserSurvey.builder()
+                            .user(user)
+                            .survey(survey)
+                            .surveyOption(surveyResult.getOption())
+                            .build();
+                })
+                .collect(Collectors.toList());
+        userSurveyRepository.saveAll(userSurveys);
     }
 
     private Survey findExistingSurvey(UUID surveyId) {

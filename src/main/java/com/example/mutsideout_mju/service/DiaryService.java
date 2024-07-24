@@ -7,11 +7,9 @@ import com.example.mutsideout_mju.dto.response.diary.DiaryListResponseData;
 import com.example.mutsideout_mju.dto.response.diary.DiaryResponseData;
 import com.example.mutsideout_mju.entity.Diary;
 import com.example.mutsideout_mju.entity.User;
-import com.example.mutsideout_mju.exception.ForbiddenException;
 import com.example.mutsideout_mju.exception.NotFoundException;
 import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.repository.DiaryRepository;
-import com.example.mutsideout_mju.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,7 +24,6 @@ import java.util.UUID;
 public class DiaryService {
 
     private final DiaryRepository diaryRepository;
-    private final UserRepository userRepository;
 
     //감정일기 전체 목록 조회
     public DiaryListResponseData getDiaryList(User user, PaginationDto paginationDto) {
@@ -45,11 +42,13 @@ public class DiaryService {
 
     //감정일기 상세 조회
     public DiaryResponseData getDiaryById(User user, UUID diaryId) {
-        Diary diary = userRepository.findById(user.getId()).get().getDiaries().stream()
-                .filter(d -> d.getId().equals(diaryId))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException(ErrorCode.DIARY_NOT_FOUND));
+        Diary diary = findDiary(user.getId(), diaryId);
         return DiaryResponseData.from(diary);
+    }
+
+    private Diary findDiary(UUID userId, UUID diaryId) {
+        return diaryRepository.findByUserIdAndId(userId, diaryId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.DIARY_NOT_FOUND));
     }
 
     //감정일기 작성
@@ -64,8 +63,7 @@ public class DiaryService {
 
     //감정일기 수정
     public void updateDiaryById(User user, UUID diaryId, UpdateDiaryDto updateDiaryDto) {
-        Diary newDiary = findDiaryById(diaryId);
-        checkUser(user, newDiary);
+        Diary newDiary = findDiary(user.getId(), diaryId);
         newDiary.setTitle(updateDiaryDto.getTitle())
                 .setContent(updateDiaryDto.getContent());
         diaryRepository.save(newDiary);
@@ -73,19 +71,7 @@ public class DiaryService {
 
     //감정일기 삭제
     public void deleteDiaryById(User user, UUID diaryId){
-        checkUser(user, findDiaryById(diaryId));
-        diaryRepository.deleteById(diaryId);
-    }
-
-    //감정일기 존재 여부 확인
-    private Diary findDiaryById(UUID diaryId) {
-        return diaryRepository.findById(diaryId).orElseThrow(() -> new NotFoundException(ErrorCode.DIARY_NOT_FOUND));
-    }
-
-    //접근 유저와 감정일기 작성자가 일치한지 확인
-    private void checkUser(User user, Diary diary) {
-        if (!diary.getUser().getId().equals(user.getId())) {
-            throw new ForbiddenException(ErrorCode.NO_ACCESS);
-        }
+        Diary diary = findDiary(user.getId(), diaryId);
+        diaryRepository.delete(diary);
     }
 }
