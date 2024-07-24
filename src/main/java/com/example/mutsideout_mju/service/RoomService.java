@@ -7,7 +7,6 @@ import com.example.mutsideout_mju.dto.response.room.RoomListResponseData;
 import com.example.mutsideout_mju.dto.response.room.RoomResponseData;
 import com.example.mutsideout_mju.entity.Room;
 import com.example.mutsideout_mju.entity.User;
-import com.example.mutsideout_mju.exception.ForbiddenException;
 import com.example.mutsideout_mju.exception.NotFoundException;
 import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.repository.RoomRepository;
@@ -51,7 +50,7 @@ public class RoomService {
 
     //집중 세션 방 상세 조회
     public RoomResponseData getRoomById(UUID roomId) {
-        Room room = findRoomById(roomId);
+        Room room = findExistingRoom(roomId);
         //현재 시각으로 부터 방 생성 시간이 24시간 이후이면 false(비활성화)로 방 삭제
         if (!room.getCreatedAt().isAfter(LocalDateTime.now().minusHours(24))) {
             roomRepository.deleteById(roomId);
@@ -73,8 +72,7 @@ public class RoomService {
 
     //집중 세션 방 수정
     public void updateRoomById(User user, UUID roomId, UpdateRoomDto updateRoomDto) {
-        Room updateRoom = findRoomById(roomId);
-        validateRoomAccess(user, updateRoom);
+        Room updateRoom = findRoomByUserIdAndRoomId(user.getId(), roomId);
         updateRoom.setTitle(updateRoomDto.getTitle())
                 .setLink(updateRoomDto.getLink())
                 .setContent(updateRoomDto.getContent());
@@ -83,19 +81,18 @@ public class RoomService {
 
     //집중 세션 방 삭제
     public void deleteRoomById(User user, UUID roomId) {
-        validateRoomAccess(user, findRoomById(roomId));
-        roomRepository.deleteById(roomId);
+        Room room = findRoomByUserIdAndRoomId(user.getId(), roomId);
+        roomRepository.delete(room);
+    }
+
+    private Room findRoomByUserIdAndRoomId(UUID userId, UUID roomId) {
+        return roomRepository.findByUserIdAndId(userId, roomId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ROOM_NOT_FOUND));
     }
 
     //방 존재 여부 확인
-    private Room findRoomById(UUID roomId) {
-        return roomRepository.findById(roomId).orElseThrow(() -> new NotFoundException(ErrorCode.ROOM_NOT_FOUND));
-    }
-
-    //접근 유저와 방 생성자가 일치한지 확인
-    private void validateRoomAccess(User user, Room room) {
-        if (!room.getUser().getId().equals(user.getId())) {
-            throw new ForbiddenException(ErrorCode.NO_ACCESS);
-        }
+    private Room findExistingRoom(UUID roomId) {
+        return roomRepository.findById(roomId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ROOM_NOT_FOUND));
     }
 }
