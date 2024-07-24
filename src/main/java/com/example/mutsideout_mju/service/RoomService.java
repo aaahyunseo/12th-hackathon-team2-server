@@ -7,6 +7,7 @@ import com.example.mutsideout_mju.dto.response.room.RoomListResponseData;
 import com.example.mutsideout_mju.dto.response.room.RoomResponseData;
 import com.example.mutsideout_mju.entity.Room;
 import com.example.mutsideout_mju.entity.User;
+import com.example.mutsideout_mju.exception.ForbiddenException;
 import com.example.mutsideout_mju.exception.NotFoundException;
 import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.repository.RoomRepository;
@@ -87,7 +88,7 @@ public class RoomService {
 
     private Room findRoomByUserIdAndRoomId(UUID userId, UUID roomId) {
         return roomRepository.findByUserIdAndId(userId, roomId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.ROOM_NOT_FOUND));
+                .orElseThrow(() -> new ForbiddenException(ErrorCode.NO_ACCESS));
     }
 
     //방 존재 여부 확인
