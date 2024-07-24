@@ -12,5 +12,5 @@ import java.util.Map;
 @Setter
 @AllArgsConstructor
 public class GroupedCompletedPlannerResponse {
-    private Map<String, List<CompletedPlannerResponse>> groupedPlanners;
+    private Map<String, List<CompletedPlannerResponseForClient>> groupedPlanners;
 }

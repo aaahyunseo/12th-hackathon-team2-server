@@ -10,13 +10,14 @@ import com.example.mutsideout_mju.exception.UnauthorizedException;
 import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.repository.PlannerRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PlannerService {
     private final PlannerRepository plannerRepository;
 
@@ -62,11 +63,24 @@ public class PlannerService {
 
     public GroupedCompletedPlannerResponse getCompletedPlannersGroupedByDate(User user) {
         CompletedPlannerListResponseData completedPlannerList = getAllCompletedPlanners(user);
+
         Map<String, List<CompletedPlannerResponse>> groupedPlanners = completedPlannerList.getCompletedPlanners()
                 .stream()
-                .collect(Collectors.groupingBy(planner -> planner.getModifiedDate().formatted(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+                .sorted(Comparator.comparing(CompletedPlannerResponse::getModifiedDate).reversed())
+                .collect(Collectors.groupingBy(planner -> planner.getModifiedDate().toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
 
-        return new GroupedCompletedPlannerResponse(groupedPlanners);
+        Map<String, List<CompletedPlannerResponseForClient>> sortedGroupedPlanners = new LinkedHashMap<>();
+        groupedPlanners.entrySet().stream()
+                .sorted(Map.Entry.<String, List<CompletedPlannerResponse>>comparingByKey().reversed())
+                .forEachOrdered(entry -> {
+                    List<CompletedPlannerResponseForClient> sortedPlanners = entry.getValue().stream()
+                            .map(CompletedPlannerResponse::toClientResponse)
+                            .sorted(Comparator.comparing(CompletedPlannerResponseForClient::getModifiedDate).reversed())
+                            .collect(Collectors.toList());
+                    sortedGroupedPlanners.put(entry.getKey(), sortedPlanners);
+                });
+
+        return new GroupedCompletedPlannerResponse(sortedGroupedPlanners);
     }
 
     private CompletedPlannerListResponseData getAllCompletedPlanners(User user) {
