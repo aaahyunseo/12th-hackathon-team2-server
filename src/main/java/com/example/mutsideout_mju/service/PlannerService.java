@@ -12,8 +12,6 @@ import com.example.mutsideout_mju.repository.PlannerRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.xml.bind.ValidationException;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -68,23 +66,27 @@ public class PlannerService {
     public GroupedCompletedPlannerResponse getCompletedPlannersGroupedByDate(User user) {
         CompletedPlannerListResponseData completedPlannerList = getAllCompletedPlanners(user);
 
+        // LocalDateTime을 기준으로 정렬하고, 날짜별로 그룹화
         Map<String, List<CompletedPlannerResponse>> groupedPlanners = completedPlannerList.getCompletedPlanners()
                 .stream()
-                .sorted(Comparator.comparing(CompletedPlannerResponse::getModifiedDate).reversed())
+                .sorted(Comparator.comparing(CompletedPlannerResponse::getModifiedDate).reversed()) // LocalDateTime으로 정렬
                 .collect(Collectors.groupingBy(planner -> planner.getModifiedDate().toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
 
-        Map<String, List<CompletedPlannerResponse>> sortedGroupedPlanners = new LinkedHashMap<>();
+        // 그룹별로 정렬하고, 각 그룹 내 항목을 LocalDateTime으로 정렬
+        Map<String, List<CompletedPlannerResponseForClient>> sortedGroupedPlanners = new LinkedHashMap<>();
         groupedPlanners.entrySet().stream()
                 .sorted(Map.Entry.<String, List<CompletedPlannerResponse>>comparingByKey().reversed())
                 .forEachOrdered(entry -> {
-                    List<CompletedPlannerResponse> sortedPlanners = entry.getValue().stream()
-                            .sorted(Comparator.comparing(CompletedPlannerResponse::getModifiedDate).reversed())
+                    List<CompletedPlannerResponseForClient> sortedPlanners = entry.getValue().stream()
+                            .map(CompletedPlannerResponse::toClientResponse) // 변환하여 클라이언트 응답 생성
+                            .sorted(Comparator.comparing(CompletedPlannerResponseForClient::getFormattedDate).reversed()) // LocalDateTime으로 정렬
                             .collect(Collectors.toList());
                     sortedGroupedPlanners.put(entry.getKey(), sortedPlanners);
                 });
 
         return new GroupedCompletedPlannerResponse(sortedGroupedPlanners);
     }
+
 
     public CompletedPlannerListResponseData getAllCompletedPlanners(User user) {
         List<Planner> completedPlanners = plannerRepository.findByIsCompletedAndUser(true, user);

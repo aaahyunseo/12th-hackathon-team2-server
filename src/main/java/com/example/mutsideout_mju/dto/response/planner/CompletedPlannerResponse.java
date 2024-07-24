@@ -1,7 +1,6 @@
 package com.example.mutsideout_mju.dto.response.planner;
 
 import com.example.mutsideout_mju.entity.Planner;
-import com.example.mutsideout_mju.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,7 +28,16 @@ public class CompletedPlannerResponse {
                 planner.getUser().getId()
         );
     }
-    public String formatModifiedDate() {
-        return this.modifiedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    public String getFormattedDate() {
+        return this.modifiedDate.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
+    public CompletedPlannerResponseForClient toClientResponse() {
+        return CompletedPlannerResponseForClient.builder()
+                .plannerId(this.plannerId)
+                .content(this.content)
+                .isCompleted(this.isCompleted)
+                .formattedDate(this.modifiedDate.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                .userId(this.userId)
+                .build();
     }
 }
