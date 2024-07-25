@@ -54,11 +54,11 @@ public class PlannerController {
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "완료된 플래너 전체 조회", completedPlanners), HttpStatus.OK);
     }
 
-    // planner 수정
-    @PatchMapping("/{plannerId}")
+    // planner 삭제
+    @DeleteMapping("/{plannerId}")
     public ResponseEntity<ResponseDto<Void>> deletePlanner(@AuthenticatedUser User user, @PathVariable UUID plannerId) {
         plannerService.deletePlanner(user, plannerId);
-        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "플랜 수정 완료"), HttpStatus.OK);
+        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "플랜 삭제 완료"), HttpStatus.OK);
     }
 
     // planner 완료하기

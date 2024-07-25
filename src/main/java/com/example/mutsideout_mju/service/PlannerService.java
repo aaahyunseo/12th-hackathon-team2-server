@@ -46,7 +46,7 @@ public class PlannerService {
     public void updatePlanner(User user, UUID plannerId, PlannerDto plannerDto) {
         Planner planner = findPlanner(user.getId(), plannerId);
         if (planner.isCompleted()) {
-            throw new UnauthorizedException(ErrorCode.INVALID_PLANNER_ACCESS);
+            throw new ForbiddenException(ErrorCode.INVALID_PLANNER_ACCESS);
         }
 
         planner.setContent(plannerDto.getContent());
