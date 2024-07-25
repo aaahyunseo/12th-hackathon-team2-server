@@ -46,7 +46,7 @@ public class PlannerService {
     public void updatePlanner(User user, UUID plannerId, PlannerDto plannerDto) {
         Planner planner = findPlanner(user.getId(), plannerId);
         if (planner.isCompleted()) {
-            throw new ForbiddenException(ErrorCode.INVALID_PLANNER_ACCESS);
+            throw new ForbiddenException(ErrorCode.INVALID_PLANNER_ACCESS, "완료된 플랜은 수정할 수 없습니다.");
         }
 
         planner.setContent(plannerDto.getContent());
@@ -97,9 +97,9 @@ public class PlannerService {
     public void deletePlanner(User user, UUID plannerId) {
         Planner planner = findPlanner(user.getId(), plannerId);
         if(planner.isCompleted()){
-            throw new ForbiddenException(ErrorCode.INVALID_PLANNER_ACCESS);
+            throw new ForbiddenException(ErrorCode.INVALID_PLANNER_ACCESS, "완료된 플랜은 삭제할 수 없습니다.");
         }
-        plannerRepository.deleteById(plannerId);
+        plannerRepository.delete(planner);
     }
 
     private Planner findPlanner(UUID userId, UUID plannerId) {
