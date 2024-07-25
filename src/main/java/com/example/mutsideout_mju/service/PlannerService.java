@@ -5,6 +5,8 @@ import com.example.mutsideout_mju.dto.request.planner.PlannerDto;
 import com.example.mutsideout_mju.dto.response.planner.*;
 import com.example.mutsideout_mju.entity.Planner;
 import com.example.mutsideout_mju.entity.User;
+import com.example.mutsideout_mju.exception.ConflictException;
+import com.example.mutsideout_mju.exception.ForbiddenException;
 import com.example.mutsideout_mju.exception.NotFoundException;
 import com.example.mutsideout_mju.exception.UnauthorizedException;
 import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
@@ -90,6 +92,14 @@ public class PlannerService {
                 .collect(Collectors.toList());
 
         return new CompletedPlannerListResponseData(completedPlannerResponses);
+    }
+
+    public void deletePlanner(User user, UUID plannerId) {
+        Planner planner = findPlanner(user.getId(), plannerId);
+        if(planner.isCompleted()){
+            throw new ForbiddenException(ErrorCode.INVALID_PLANNER_ACCESS);
+        }
+        plannerRepository.deleteById(plannerId);
     }
 
     private Planner findPlanner(UUID userId, UUID plannerId) {
