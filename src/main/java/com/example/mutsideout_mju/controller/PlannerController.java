@@ -54,6 +54,13 @@ public class PlannerController {
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "완료된 플래너 전체 조회", completedPlanners), HttpStatus.OK);
     }
 
+    // planner 삭제
+    @DeleteMapping("/{plannerId}")
+    public ResponseEntity<ResponseDto<Void>> deletePlanner(@AuthenticatedUser User user, @PathVariable UUID plannerId) {
+        plannerService.deletePlanner(user, plannerId);
+        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "플랜 삭제 완료"), HttpStatus.OK);
+    }
+
     // planner 완료하기
     @PutMapping("/{plannerId}")
     public ResponseEntity<ResponseDto<Void>> completePlannerById(

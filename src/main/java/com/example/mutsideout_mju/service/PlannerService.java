@@ -5,6 +5,8 @@ import com.example.mutsideout_mju.dto.request.planner.PlannerDto;
 import com.example.mutsideout_mju.dto.response.planner.*;
 import com.example.mutsideout_mju.entity.Planner;
 import com.example.mutsideout_mju.entity.User;
+import com.example.mutsideout_mju.exception.ConflictException;
+import com.example.mutsideout_mju.exception.ForbiddenException;
 import com.example.mutsideout_mju.exception.NotFoundException;
 import com.example.mutsideout_mju.exception.UnauthorizedException;
 import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
@@ -44,7 +46,7 @@ public class PlannerService {
     public void updatePlanner(User user, UUID plannerId, PlannerDto plannerDto) {
         Planner planner = findPlanner(user.getId(), plannerId);
         if (planner.isCompleted()) {
-            throw new UnauthorizedException(ErrorCode.INVALID_PLANNER_ACCESS);
+            throw new ForbiddenException(ErrorCode.INVALID_PLANNER_ACCESS, "완료된 플랜은 수정할 수 없습니다.");
         }
 
         planner.setContent(plannerDto.getContent());
@@ -90,6 +92,14 @@ public class PlannerService {
                 .collect(Collectors.toList());
 
         return new CompletedPlannerListResponseData(completedPlannerResponses);
+    }
+
+    public void deletePlanner(User user, UUID plannerId) {
+        Planner planner = findPlanner(user.getId(), plannerId);
+        if(planner.isCompleted()){
+            throw new ForbiddenException(ErrorCode.INVALID_PLANNER_ACCESS, "완료된 플랜은 삭제할 수 없습니다.");
+        }
+        plannerRepository.delete(planner);
     }
 
     private Planner findPlanner(UUID userId, UUID plannerId) {
