@@ -28,6 +28,7 @@ public class PlannerService {
 
         List<PlannerResponseData> plannerResponseDataList = allPlanners.stream()
                 .filter(planner -> !planner.isCompleted())
+                .sorted(Comparator.comparing(Planner::getCreatedAt).reversed())
                 .map(PlannerResponseData::fromPlanner)
                 .collect(Collectors.toList());
 
