@@ -1,16 +1,17 @@
 package com.example.mutsideout_mju.controller;
 
 import com.example.mutsideout_mju.authentication.AuthenticatedUser;
+import com.example.mutsideout_mju.dto.request.user.DeleteUserDto;
+import com.example.mutsideout_mju.dto.request.user.UpdateUserDto;
 import com.example.mutsideout_mju.dto.response.ResponseDto;
 import com.example.mutsideout_mju.dto.response.user.UserGradeResponseDto;
 import com.example.mutsideout_mju.entity.User;
 import com.example.mutsideout_mju.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,5 +23,19 @@ public class UserController {
     public ResponseEntity<ResponseDto<UserGradeResponseDto>> getUserGrade(@AuthenticatedUser User user) {
         UserGradeResponseDto userGradeResponseDto = userService.getUserGrade(user);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "유저 등급 조회 완료", userGradeResponseDto), HttpStatus.OK);
+    }
+
+    @PatchMapping
+    public ResponseEntity<ResponseDto<UserGradeResponseDto>> updateUser(@AuthenticatedUser User user,
+                                                                        @RequestBody @Valid UpdateUserDto updateUserDto) {
+        userService.updateUser(user, updateUserDto);
+        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "유저 정보 수정 완료"), HttpStatus.OK);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<ResponseDto<UserGradeResponseDto>> deleteUser(@AuthenticatedUser User user,
+                                                                        @RequestBody @Valid DeleteUserDto deleteUserDto) {
+        userService.deleteUser(user, deleteUserDto);
+        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "회원 탈퇴 성공"), HttpStatus.OK);
     }
 }
