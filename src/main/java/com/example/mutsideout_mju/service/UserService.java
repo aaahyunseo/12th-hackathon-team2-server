@@ -8,6 +8,7 @@ import com.example.mutsideout_mju.entity.Grade;
 import com.example.mutsideout_mju.entity.SurveyOption;
 import com.example.mutsideout_mju.entity.User;
 import com.example.mutsideout_mju.entity.UserSurvey;
+import com.example.mutsideout_mju.exception.ConflictException;
 import com.example.mutsideout_mju.exception.ForbiddenException;
 import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.repository.UserRepository;
@@ -63,6 +64,10 @@ public class UserService {
     public void updateUser(User user, UpdateUserDto updateUserDto) {
         validatePassword(updateUserDto.getOriginPassword(), user.getPassword());
         if (updateUserDto.getNewName() != null && !updateUserDto.getNewName().isEmpty()) {
+            //중복된 이름이 있을 경우
+            if (userRepository.findByName(updateUserDto.getNewName()).isPresent()) {
+                throw new ConflictException(ErrorCode.DUPLICATED_NAME);
+            }
             user.setName(updateUserDto.getNewName());
         }
         if (updateUserDto.getNewPassword() != null && !updateUserDto.getNewPassword().isEmpty()) {
