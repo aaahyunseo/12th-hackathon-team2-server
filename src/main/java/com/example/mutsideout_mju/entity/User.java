@@ -22,7 +22,7 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
     @Enumerated(EnumType.STRING)
-    private UserGrade userGrade;
+    private Grade grade;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserSurvey> userSurveys;
@@ -36,8 +36,8 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Room> rooms;
 
-    public void setUserGrade(UserGrade userGrade) {
-        this.userGrade = userGrade;
+    public void setGrade(Grade grade) {
+        this.grade = grade;
     }
 
     public void setName(String name) {
@@ -48,13 +48,13 @@ public class User extends BaseEntity {
         this.password = password;
     }
 
-    public UserGrade determineGrade(long count) {
+    public Grade determineGrade(long count) {
         if (count >= 4) {
-            return UserGrade.TOMATO;
+            return Grade.TOMATO;
         } else if (count >= 2) {
-            return UserGrade.BANANA;
+            return Grade.BANANA;
         } else {
-            return UserGrade.AVOCADO;
+            return Grade.AVOCADO;
         }
     }
 }

@@ -4,7 +4,7 @@ import com.example.mutsideout_mju.authentication.PasswordHashEncryption;
 import com.example.mutsideout_mju.dto.request.user.DeleteUserDto;
 import com.example.mutsideout_mju.dto.request.user.UpdateUserDto;
 import com.example.mutsideout_mju.dto.response.user.UserGradeResponseDto;
-import com.example.mutsideout_mju.entity.UserGrade;
+import com.example.mutsideout_mju.entity.Grade;
 import com.example.mutsideout_mju.entity.SurveyOption;
 import com.example.mutsideout_mju.entity.User;
 import com.example.mutsideout_mju.entity.UserSurvey;
@@ -33,16 +33,16 @@ public class UserService {
         long count = userSurveyList.stream()
                 .filter(userSurvey -> isValidSurveyOption(userSurvey))
                 .count();
-        UserGrade userGrade = user.determineGrade(count);
+        Grade grade = user.determineGrade(count);
 
-        user.setUserGrade(userGrade);
+        user.setGrade(grade);
         userRepository.save(user);
 
-        return UserGradeResponseDto.of(user.getName(), userGrade);
+        return UserGradeResponseDto.of(user.getName(), grade);
     }
 
     public UserGradeResponseDto getUserGrade(User user) {
-        return UserGradeResponseDto.from(user.getUserGrade());
+        return UserGradeResponseDto.from(user.getGrade());
     }
 
     public static boolean isValidSurveyOption(UserSurvey userSurvey) {

@@ -1,6 +1,6 @@
 package com.example.mutsideout_mju.entity;
 
-public enum UserGrade {
+public enum Grade {
     AVOCADO,
     BANANA,
     TOMATO

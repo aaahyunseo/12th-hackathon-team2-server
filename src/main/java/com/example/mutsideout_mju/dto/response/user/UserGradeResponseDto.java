@@ -1,6 +1,6 @@
 package com.example.mutsideout_mju.dto.response.user;
 
-import com.example.mutsideout_mju.entity.UserGrade;
+import com.example.mutsideout_mju.entity.Grade;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -8,18 +8,18 @@ import lombok.Getter;
 @Builder
 public class UserGradeResponseDto {
     private String name;
-    private UserGrade userGrade;
+    private Grade grade;
 
-    public static UserGradeResponseDto of(String name, UserGrade userGrade) {
+    public static UserGradeResponseDto of(String name, Grade grade) {
         return UserGradeResponseDto.builder()
                 .name(name)
-                .userGrade(userGrade)
+                .grade(grade)
                 .build();
     }
 
-    public static UserGradeResponseDto from(UserGrade userGrade) {
+    public static UserGradeResponseDto from(Grade grade) {
         return UserGradeResponseDto.builder()
-                .userGrade(userGrade)
+                .grade(grade)
                 .build();
     }
 }
