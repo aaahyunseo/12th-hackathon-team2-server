@@ -47,4 +47,14 @@ public class User extends BaseEntity {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public Grade determineGrade(long count) {
+        if (count >= 4) {
+            return Grade.TOMATO;
+        } else if (count >= 2) {
+            return Grade.BANANA;
+        } else {
+            return Grade.AVOCADO;
+        }
+    }
 }
