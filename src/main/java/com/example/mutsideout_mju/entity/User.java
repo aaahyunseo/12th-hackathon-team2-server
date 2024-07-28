@@ -48,13 +48,13 @@ public class User extends BaseEntity {
         this.password = password;
     }
 
-    public Grade determineGrade(long count) {
+    public UserGrade determineGrade(long count) {
         if (count >= 4) {
-            return Grade.TOMATO;
+            return UserGrade.TOMATO;
         } else if (count >= 2) {
-            return Grade.BANANA;
+            return UserGrade.BANANA;
         } else {
-            return Grade.AVOCADO;
+            return UserGrade.AVOCADO;
         }
     }
 }
