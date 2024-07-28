@@ -1,5 +1,5 @@
 package com.example.mutsideout_mju.entity;
 
-public enum AchievementGrade {
+public enum StatsGrade {
     LEVEL1, LEVEL2, LEVEL3
 }
