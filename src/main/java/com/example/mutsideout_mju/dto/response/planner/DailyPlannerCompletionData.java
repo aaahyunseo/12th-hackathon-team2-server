@@ -12,7 +12,7 @@ public class DailyPlannerCompletionData {
     private StatsGrade statsGrade;
 
     public static DailyPlannerCompletionData of(String date, Long count) {
-        StatsGrade statsGrade = Planner.determineStat(count);
+        StatsGrade statsGrade = Planner.determineStatsGrade(count);
         return new DailyPlannerCompletionData(date, statsGrade);
     }
 }
