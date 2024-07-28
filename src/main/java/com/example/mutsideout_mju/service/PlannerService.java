@@ -5,16 +5,17 @@ import com.example.mutsideout_mju.dto.request.planner.PlannerDto;
 import com.example.mutsideout_mju.dto.response.planner.*;
 import com.example.mutsideout_mju.entity.Planner;
 import com.example.mutsideout_mju.entity.User;
-import com.example.mutsideout_mju.exception.ConflictException;
 import com.example.mutsideout_mju.exception.ForbiddenException;
 import com.example.mutsideout_mju.exception.NotFoundException;
 import com.example.mutsideout_mju.exception.UnauthorizedException;
 import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.repository.PlannerRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -93,6 +94,21 @@ public class PlannerService {
                 .collect(Collectors.toList());
 
         return new CompletedPlannerListResponseData(completedPlannerResponses);
+    }
+
+    public DailyPlannerCompletionDataList getMonthlyPlannerStats(User user, String month) {
+        LocalDate startDate = LocalDate.parse(month + "-01");
+        LocalDate endDate = startDate.with(TemporalAdjusters.lastDayOfMonth());
+
+        // 현재 날짜와 해당 월의 마지막 날 중 더 이른 날짜를 endDate 로 설정
+        LocalDate today = LocalDate.now();
+        if (endDate.isAfter(today)) {
+            endDate = today;
+        }
+
+        Map<String, Long> dailyCounts = plannerRepository.getCompletedPlannersStats(user.getId(), startDate, endDate);
+
+        return DailyPlannerCompletionDataList.from(dailyCounts);
     }
 
     public void deletePlanner(User user, UUID plannerId) {
