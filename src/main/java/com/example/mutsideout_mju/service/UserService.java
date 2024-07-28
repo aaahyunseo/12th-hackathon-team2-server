@@ -3,6 +3,9 @@ package com.example.mutsideout_mju.service;
 import com.example.mutsideout_mju.authentication.PasswordHashEncryption;
 import com.example.mutsideout_mju.dto.request.user.DeleteUserDto;
 import com.example.mutsideout_mju.dto.request.user.UpdateUserDto;
+import com.example.mutsideout_mju.dto.response.planner.DailyPlannerCompletionDataList;
+import com.example.mutsideout_mju.dto.response.user.MyPageResponseData;
+import com.example.mutsideout_mju.dto.response.user.ProfileResponseData;
 import com.example.mutsideout_mju.dto.response.user.UserGradeResponseDto;
 import com.example.mutsideout_mju.entity.Grade;
 import com.example.mutsideout_mju.entity.SurveyOption;
@@ -74,6 +77,22 @@ public class UserService {
             user.setPassword(passwordHashEncryption.encrypt(updateUserDto.getNewPassword()));
         }
         userRepository.save(user);
+    }
+
+    public MyPageResponseData getMyPage(User user){
+        ProfileResponseData profileResponseData = ProfileResponseData.builder()
+                .name(user.getName())
+                .email(user.getEmail())
+                .grade(user.getGrade())
+                .build();
+        //DailyPlannerCompletionDataList dailyPlannerCompletionDataList = DailyPlannerCompletionDataList.from();
+
+        MyPageResponseData myPageResponseData = MyPageResponseData.builder()
+                .profileResponseData(profileResponseData)
+                 //.dailyPlannerCompletionDataList(dailyPlannerCompletionDataList)
+                .build();
+
+        return myPageResponseData;
     }
 
     //비밀번호 일치 여부 확인
