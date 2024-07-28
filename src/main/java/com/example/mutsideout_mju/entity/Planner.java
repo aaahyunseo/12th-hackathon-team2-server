@@ -30,4 +30,14 @@ public class Planner extends BaseEntity {
     public void setContent(String content){
         this.content = content;
     }
+
+    public static StatsGrade determineStatsGrade(long count) {
+        if (count >= 4) {
+            return StatsGrade.LEVEL3;
+        } else if (count >= 2) {
+            return StatsGrade.LEVEL2;
+        } else {
+            return StatsGrade.LEVEL1;
+        }
+    }
 }

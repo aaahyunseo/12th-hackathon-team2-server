@@ -4,7 +4,7 @@ import com.example.mutsideout_mju.authentication.AuthenticatedUser;
 import com.example.mutsideout_mju.dto.request.planner.CompletePlannerRequestDto;
 import com.example.mutsideout_mju.dto.request.planner.PlannerDto;
 import com.example.mutsideout_mju.dto.response.ResponseDto;
-import com.example.mutsideout_mju.dto.response.planner.CompletedPlannerResponse;
+import com.example.mutsideout_mju.dto.response.planner.DailyPlannerCompletionDataList;
 import com.example.mutsideout_mju.dto.response.planner.GroupedCompletedPlannerResponse;
 import com.example.mutsideout_mju.dto.response.planner.PlannerListResponseData;
 import com.example.mutsideout_mju.entity.User;
@@ -15,9 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -69,5 +66,13 @@ public class PlannerController {
             @PathVariable UUID plannerId) {
         plannerService.completePlannerById(user, plannerId, requestDto);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "플래너 완료 상태로 변경"), HttpStatus.OK);
+    }
+
+    @GetMapping("/calendars")
+    public ResponseEntity<ResponseDto<DailyPlannerCompletionDataList>> getMonthlyPlannersStats(
+            @AuthenticatedUser User user,
+            @RequestParam String month) {
+        DailyPlannerCompletionDataList dailyPlannerCompletionDataList = plannerService.getMonthlyPlannerStats(user, month);
+        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "월별 플래너 잔디 타입 조회 완료", dailyPlannerCompletionDataList), HttpStatus.OK);
     }
 }

@@ -35,14 +35,14 @@ public class UserService {
                 .count();
         Grade grade = user.determineGrade(count);
 
-        user.setUserGrade(grade);
+        user.setGrade(grade);
         userRepository.save(user);
 
         return UserGradeResponseDto.of(user.getName(), grade);
     }
 
     public UserGradeResponseDto getUserGrade(User user) {
-        return UserGradeResponseDto.from(user.getUserGrade());
+        return UserGradeResponseDto.from(user.getGrade());
     }
 
     public static boolean isValidSurveyOption(UserSurvey userSurvey) {

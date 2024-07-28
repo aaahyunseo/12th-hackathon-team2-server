@@ -5,7 +5,6 @@ import com.example.mutsideout_mju.dto.request.survey.SurveyResultListDto;
 import com.example.mutsideout_mju.dto.response.ResponseDto;
 import com.example.mutsideout_mju.dto.response.survey.SurveyQuestionListResponseDto;
 import com.example.mutsideout_mju.dto.response.user.UserGradeResponseDto;
-import com.example.mutsideout_mju.entity.Grade;
 import com.example.mutsideout_mju.entity.User;
 import com.example.mutsideout_mju.service.SurveyService;
 import com.example.mutsideout_mju.service.UserService;
