@@ -1,7 +1,7 @@
 package com.example.mutsideout_mju.service;
 
 import com.example.mutsideout_mju.dto.response.user.UserGradeResponseDto;
-import com.example.mutsideout_mju.entity.Grade;
+import com.example.mutsideout_mju.entity.UserGrade;
 import com.example.mutsideout_mju.entity.SurveyOption;
 import com.example.mutsideout_mju.entity.User;
 import com.example.mutsideout_mju.entity.UserSurvey;
@@ -26,12 +26,12 @@ public class UserService {
         long count = userSurveyList.stream()
                 .filter(userSurvey -> isValidSurveyOption(userSurvey))
                 .count();
-        Grade grade = user.determineGrade(count);
+        UserGrade userGrade = user.determineGrade(count);
 
-        user.setUserGrade(grade);
+        user.setUserGrade(userGrade);
         userRepository.save(user);
 
-        return UserGradeResponseDto.of(user.getName(), grade);
+        return UserGradeResponseDto.of(user.getName(), userGrade);
     }
 
     public UserGradeResponseDto getUserGrade(User user) {
