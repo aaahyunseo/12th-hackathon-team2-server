@@ -80,18 +80,8 @@ public class UserService {
     }
 
     public MyPageResponseData getMyPage(User user){
-        ProfileResponseData profileResponseData = ProfileResponseData.builder()
-                .name(user.getName())
-                .email(user.getEmail())
-                .grade(user.getGrade())
-                .build();
-        //DailyPlannerCompletionDataList dailyPlannerCompletionDataList = DailyPlannerCompletionDataList.from();
-
-        MyPageResponseData myPageResponseData = MyPageResponseData.builder()
-                .profileResponseData(profileResponseData)
-                 //.dailyPlannerCompletionDataList(dailyPlannerCompletionDataList)
-                .build();
-
+        ProfileResponseData profileResponseData = ProfileResponseData.of(user.getEmail(), user.getName(), user.getGrade());
+        MyPageResponseData myPageResponseData = MyPageResponseData.of(profileResponseData);
         return myPageResponseData;
     }
 
