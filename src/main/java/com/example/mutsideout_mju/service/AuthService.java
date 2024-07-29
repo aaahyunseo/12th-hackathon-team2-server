@@ -71,7 +71,7 @@ public class AuthService {
     private TokenResponseDto createToken(User user) {
         String payload = String.valueOf(user.getId());
         String accessToken = jwtTokenProvider.createToken(payload);
-
+        String refreshToken = jwtTokenProvider.createRefreshToken();
         return new TokenResponseDto(accessToken);
     }
 
