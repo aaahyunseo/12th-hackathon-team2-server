@@ -3,8 +3,6 @@ package com.example.mutsideout_mju.service;
 import com.example.mutsideout_mju.authentication.PasswordHashEncryption;
 import com.example.mutsideout_mju.dto.request.user.DeleteUserDto;
 import com.example.mutsideout_mju.dto.request.user.UpdateUserDto;
-import com.example.mutsideout_mju.dto.response.planner.DailyPlannerCompletionDataList;
-import com.example.mutsideout_mju.dto.response.user.MyPageResponseData;
 import com.example.mutsideout_mju.dto.response.user.ProfileResponseData;
 import com.example.mutsideout_mju.dto.response.user.UserGradeResponseDto;
 import com.example.mutsideout_mju.entity.Grade;
@@ -79,10 +77,9 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public MyPageResponseData getMyPage(User user){
+    public ProfileResponseData getMyPage(User user){
         ProfileResponseData profileResponseData = ProfileResponseData.of(user.getEmail(), user.getName(), user.getGrade());
-        MyPageResponseData myPageResponseData = MyPageResponseData.of(profileResponseData);
-        return myPageResponseData;
+        return profileResponseData;
     }
 
     //비밀번호 일치 여부 확인
