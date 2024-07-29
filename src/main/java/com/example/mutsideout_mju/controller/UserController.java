@@ -4,6 +4,7 @@ import com.example.mutsideout_mju.authentication.AuthenticatedUser;
 import com.example.mutsideout_mju.dto.request.user.DeleteUserDto;
 import com.example.mutsideout_mju.dto.request.user.UpdateUserDto;
 import com.example.mutsideout_mju.dto.response.ResponseDto;
+import com.example.mutsideout_mju.dto.response.user.ProfileResponseData;
 import com.example.mutsideout_mju.dto.response.user.UserGradeResponseDto;
 import com.example.mutsideout_mju.entity.User;
 import com.example.mutsideout_mju.service.UserService;
@@ -37,5 +38,11 @@ public class UserController {
                                                                         @RequestBody @Valid DeleteUserDto deleteUserDto) {
         userService.deleteUser(user, deleteUserDto);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "회원 탈퇴 성공"), HttpStatus.OK);
+    }
+
+    @GetMapping("/mypage")
+    public ResponseEntity<ResponseDto<ProfileResponseData>> getMyPage(@AuthenticatedUser User user) {
+        ProfileResponseData profileResponseData = userService.getMyPage(user);
+        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "회원 정보 조회 완료", profileResponseData), HttpStatus.OK);
     }
 }
