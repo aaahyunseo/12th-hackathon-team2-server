@@ -51,6 +51,7 @@ public class JwtTokenProvider {
             throw new UnauthorizedException(ErrorCode.INVALID_TOKEN, e.getMessage());
         }
     }
+
     public String createRefreshToken() {
         Date now = new Date();
         Date validity = new Date(now.getTime() + Duration.ofDays(7).toMillis());
@@ -61,6 +62,7 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
     }
+
     public boolean isTokenExpired(String token) {
         try {
             Claims claims = Jwts.parserBuilder()
