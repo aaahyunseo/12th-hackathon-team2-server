@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,20 +29,20 @@ import java.util.stream.Collectors;
 public class RoomService {
     private final RoomRepository roomRepository;
 
+    // 24시간 지난 방 삭제 (한 시간마다 실행)
+    @Scheduled(fixedRate = 3600000)
+    public void deleteOldRooms() {
+        LocalDateTime cutoffTime = LocalDateTime.now().minusHours(24);
+        roomRepository.deleteByCreatedAtBefore(cutoffTime);
+    }
+
     //집중 세션 방 전체 목록 조회
     public RoomListResponseData getRoomList(PaginationDto paginationDto) {
         //요청받은 페이지 번호, 페이지 크기, 작성순으로 정렬
         Pageable pageable = PageRequest.of(paginationDto.getPage(), paginationDto.getPAGE_SIZE(), Sort.by(Sort.Order.desc("createdAt")));
 
-        // 24시간이 지난 방 삭제
-        List<Room> deactivatedRooms = roomRepository.findAll().stream()
-                .filter(room -> room.getCreatedAt().isBefore(LocalDateTime.now().minusHours(24)))
-                .collect(Collectors.toList());
-        roomRepository.deleteAll(deactivatedRooms);
-
         // 비활성화 된 방 삭제 후 해당 페이지 데이터를 모두 가져옴
         Page<Room> roomPage = roomRepository.findAll(pageable);
-
         if (roomPage.getTotalPages() <= paginationDto.getPage() && paginationDto.getPage() != 0) {
             throw new NotFoundException(ErrorCode.NOT_FOUND_PAGE);
         }
