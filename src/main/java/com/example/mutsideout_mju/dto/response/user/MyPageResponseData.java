@@ -8,6 +8,10 @@ import lombok.Getter;
 @Builder
 public class MyPageResponseData {
     private ProfileResponseData profileResponseData;
-    private DailyPlannerCompletionDataList dailyPlannerCompletionDataList;
+
+    public static MyPageResponseData of(ProfileResponseData profileResponseData) {
+        return builder()
+                .profileResponseData(profileResponseData).build();
+    }
 }
 
