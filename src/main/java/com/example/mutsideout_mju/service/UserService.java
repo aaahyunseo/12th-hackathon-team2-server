@@ -27,6 +27,9 @@ public class UserService {
     private final UserSurveyRepository userSurveyRepository;
     private final PasswordHashEncryption passwordHashEncryption;
 
+    /**
+     * 유저 등급 계산
+     */
     @Transactional
     public UserGradeResponseDto calculateUserGrade(User user) {
         List<UserSurvey> userSurveyList = userSurveyRepository.findByUserId(user.getId());
@@ -42,10 +45,16 @@ public class UserService {
         return UserGradeResponseDto.of(user.getName(), grade);
     }
 
+    /**
+     * 유저 등급 반환
+     */
     public UserGradeResponseDto getUserGrade(User user) {
         return UserGradeResponseDto.from(user.getGrade());
     }
 
+    /**
+     * 설문조사 응답 유효 검사
+     */
     public static boolean isValidSurveyOption(UserSurvey userSurvey) {
         Long questionNumber = userSurvey.getSurvey().getNumber();
         SurveyOption option = userSurvey.getSurveyOption();
@@ -54,13 +63,17 @@ public class UserService {
                 || (questionNumber >= 4 && questionNumber <= 6 && option == SurveyOption.YES);
     }
 
-    //회원 탈퇴
+    /**
+     * 유저 탈퇴
+     */
     public void deleteUser(User user, DeleteUserDto deleteUserDto) {
         validatePassword(deleteUserDto.getPassword(), user.getPassword());
         userRepository.delete(user);
     }
 
-    //회원 정보 수정
+    /**
+     * 유저 정보 수정
+     */
     @Transactional
     public void updateUser(User user, UpdateUserDto updateUserDto) {
         validatePassword(updateUserDto.getOriginPassword(), user.getPassword());

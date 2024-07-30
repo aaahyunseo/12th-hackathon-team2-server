@@ -23,6 +23,9 @@ public class SurveyService {
     private final SurveyRepository surveyRepository;
     private final UserSurveyRepository userSurveyRepository;
 
+    /**
+     * 설문조사 질문 전체 조회
+     */
     public SurveyQuestionListResponseDto getAllSurveyQuestions() {
         List<SurveyQuestionData> surveyQuestionDataList = surveyRepository.findAll().stream()
                 .map(survey -> SurveyQuestionData.from(survey))
@@ -31,6 +34,9 @@ public class SurveyService {
         return SurveyQuestionListResponseDto.wrap(surveyQuestionDataList);
     }
 
+    /**
+     * 설문조사 응답 저장
+     */
     @Transactional
     public void saveSurveyResults(User user, SurveyResultListDto surveyResultListDto) {
         // 설문에 이미 응답했는지 검증
