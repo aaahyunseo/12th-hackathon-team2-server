@@ -13,12 +13,14 @@ public class RoomResponseDto {
     private UUID id;
     private String title;
     private String createdAt;
+    private String imageLink;
 
-    public static RoomResponseDto fromRoom(Room room){
+    public static RoomResponseDto fromRoom(Room room, String imageLink){
         return RoomResponseDto.builder()
                 .id(room.getId())
                 .title(room.getTitle())
                 .createdAt(room.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                .imageLink(imageLink)
                 .build();
     }
 }
