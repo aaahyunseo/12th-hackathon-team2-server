@@ -43,6 +43,7 @@ public class UserController {
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "회원 탈퇴 성공"), HttpStatus.OK);
     }
 
+    // 유저 전체 정보(이메일, 이름, 등급) 조회
     @GetMapping("/mypage")
     public ResponseEntity<ResponseDto<ProfileResponseData>> getMyPage(@AuthenticatedUser User user) {
         ProfileResponseData profileResponseData = userService.getMyPage(user);
