@@ -52,6 +52,7 @@ public class JwtTokenProvider {
         }
     }
 
+    // RefreshToken 생성
     public String createRefreshToken() {
         Date now = new Date();
         Date validity = new Date(now.getTime() + Duration.ofDays(7).toMillis());

@@ -73,13 +73,17 @@ public class AuthService {
         return createToken(user);
     }
 
-    // accessToken, refreshToken 재생성.
+    /**
+     * accessToken, refreshToken 재발급
+     */
     public TokenResponseDto refresh(String refreshToken) {
         User user = validateRefreshToken(refreshToken);
         return createToken(user);
     }
 
-    // refreshToken 관리
+    /**
+     * 유저 refreshToken 관리
+     */
     private User validateRefreshToken(String refreshToken) {
         RefreshToken storedRefreshToken = refreshTokenRepository.findByToken(refreshToken);
 
@@ -97,6 +101,9 @@ public class AuthService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 
+    /**
+     * accessToken 토큰 생성 및 refreshToken 저장
+     */
     private TokenResponseDto createToken(User user) {
         String payload = String.valueOf(user.getId());
         String accessToken = jwtTokenProvider.createToken(payload);

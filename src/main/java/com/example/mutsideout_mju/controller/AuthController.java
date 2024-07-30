@@ -68,6 +68,7 @@ public class AuthController {
         response.addHeader("set-cookie", cookie_refresh.toString());
     }
 
+    // RefreshToken 발급
     @GetMapping("/refresh")
     public ResponseEntity<ResponseDto<Void>> refresh(HttpServletResponse response, HttpServletRequest request) {
         String refreshToken = getRefreshTokenFromCookie(request);
