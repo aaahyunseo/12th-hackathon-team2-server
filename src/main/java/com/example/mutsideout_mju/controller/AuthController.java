@@ -47,7 +47,7 @@ public class AuthController {
 
     private static void setCookie(HttpServletResponse response, String accessToken) {
         ResponseCookie cookie = ResponseCookie.from(AuthenticationExtractor.TOKEN_COOKIE_NAME, accessToken)
-                .maxAge(Duration.ofMinutes(30))
+                .maxAge(Duration.ofMillis(1800000))
                 .path("/")
                 .httpOnly(true)
                 .sameSite("None").secure(true)
