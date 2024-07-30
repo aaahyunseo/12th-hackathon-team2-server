@@ -8,5 +8,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class TokenResponseDto {
     private String AccessToken;
-    private RefreshToken RefreshToken;
+    private String RefreshToken;
 }
