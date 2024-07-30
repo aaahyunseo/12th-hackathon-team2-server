@@ -28,6 +28,7 @@ public class AuthController {
 
     private final AuthService authService;
 
+    // 회원가입
     @PostMapping("/signup")
     public ResponseEntity<ResponseDto<Void>> signup(@RequestBody @Valid SignupDto signupDto, HttpServletResponse response) {
         TokenResponseDto tokenResponseDto = authService.signup(signupDto);
@@ -35,6 +36,7 @@ public class AuthController {
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.CREATED, "회원가입 완료"), HttpStatus.CREATED);
     }
 
+    // 로그인
     @PostMapping("/login")
     public ResponseEntity<ResponseDto<Void>> login(@RequestBody @Valid LoginDto loginDto, HttpServletResponse response) {
         TokenResponseDto tokenResponseDto = authService.login(loginDto);
@@ -111,6 +113,7 @@ public class AuthController {
         response.addHeader("Set-Cookie", refreshCookie.toString());
     }
 
+    // 로그아웃
     @GetMapping("/logout")
     public ResponseEntity<ResponseDto<Void>> logout(final HttpServletResponse response) {
         clearCookies(response);

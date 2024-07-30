@@ -22,6 +22,7 @@ public class SurveyController {
     private final SurveyService surveyService;
     private final UserService userService;
 
+    // 설문조사 응답
     @PostMapping
     public ResponseEntity<ResponseDto<UserGradeResponseDto>> saveSurveyResults(@AuthenticatedUser User user,
                                                                                @RequestBody @Valid SurveyResultListDto surveyResultListDto) {
@@ -30,6 +31,7 @@ public class SurveyController {
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "설문조사 저장 및 유저 등급 반환 완료", userGradeResponseDto), HttpStatus.OK);
     }
 
+    // 설문조사 질문 전체 조회
     @GetMapping
     public ResponseEntity<ResponseDto<SurveyQuestionListResponseDto>> getAllSurveyQuestions() {
         SurveyQuestionListResponseDto surveyList = surveyService.getAllSurveyQuestions();

@@ -33,14 +33,18 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final S3Service s3Service;
 
-    // 24시간 지난 방 삭제 (한 시간마다 실행)
+    /**
+     * 24시간 지난 방 삭제 (한 시간마다 실행)
+     */
     @Scheduled(fixedRate = 3600000)
     public void deleteOldRooms() {
         LocalDateTime cutoffTime = LocalDateTime.now().minusHours(24);
         roomRepository.deleteByCreatedAtBefore(cutoffTime);
     }
 
-    //집중 세션 방 전체 목록 조회
+    /**
+     * 집중 세션 방 전체 목록 조회
+     */
     public RoomListResponseData getRoomList(PaginationDto paginationDto) {
         // 요청받은 페이지 번호, 페이지 크기, 작성순으로 정렬
         Pageable pageable = PageRequest.of(paginationDto.getPage(), paginationDto.getPAGE_SIZE(), Sort.by(Sort.Order.desc("createdAt")));
@@ -59,7 +63,9 @@ public class RoomService {
         return new RoomListResponseData(roomResponseList, pagination);
     }
 
-    //집중 세션 방 상세 조회
+    /**
+     * 집중 세션 방 상세 조회
+     */
     public RoomResponseData getRoomById(UUID roomId) {
         Room room = findExistingRoom(roomId);
         //현재 시각으로 부터 방 생성 시간이 24시간 이후이면 false(비활성화)로 방 삭제
@@ -70,7 +76,9 @@ public class RoomService {
         return RoomResponseData.from(room);
     }
 
-    //집중 세션 방 생성
+    /**
+     * 집중 세션 방 생성
+     */
     public void createRoom(User user, CreateRoomDto createRoomDto) {
         Room room = Room.builder()
                 .title(createRoomDto.getTitle())
@@ -81,7 +89,9 @@ public class RoomService {
         roomRepository.save(room);
     }
 
-    //집중 세션 방 수정
+    /**
+     * 집중 세션 방 수정
+     */
     public void updateRoomById(User user, UUID roomId, UpdateRoomDto updateRoomDto) {
         Room updateRoom = findRoomByUserIdAndRoomId(user.getId(), roomId);
         updateRoom.setTitle(updateRoomDto.getTitle())
@@ -90,7 +100,9 @@ public class RoomService {
         roomRepository.save(updateRoom);
     }
 
-    //집중 세션 방 삭제
+    /**
+     * 집중 세션 방 삭제
+     */
     public void deleteRoomById(User user, UUID roomId) {
         Room room = findRoomByUserIdAndRoomId(user.getId(), roomId);
         roomRepository.delete(room);
@@ -101,7 +113,6 @@ public class RoomService {
                 .orElseThrow(() -> new ForbiddenException(ErrorCode.NO_ACCESS));
     }
 
-    //방 존재 여부 확인
     private Room findExistingRoom(UUID roomId) {
         return roomRepository.findById(roomId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ROOM_NOT_FOUND));

@@ -24,6 +24,9 @@ import java.util.stream.Collectors;
 public class PlannerService {
     private final PlannerRepository plannerRepository;
 
+    /**
+     * 미완료 상태의 플래너 전체 조회
+     */
     public PlannerListResponseData getAllPlanners(User user) {
         List<Planner> allPlanners = plannerRepository.findAllByUserId(user.getId());
 
@@ -36,6 +39,9 @@ public class PlannerService {
         return new PlannerListResponseData(plannerResponseDataList);
     }
 
+    /**
+     * 플래너 생성
+     */
     public void createPlanner(User user, PlannerDto plannerDto) {
         Planner planner = Planner.builder()
                 .content(plannerDto.getContent())
@@ -45,6 +51,9 @@ public class PlannerService {
         this.plannerRepository.save(planner);
     }
 
+    /**
+     * 플래너 수정
+     */
     public void updatePlanner(User user, UUID plannerId, PlannerDto plannerDto) {
         Planner planner = findPlanner(user.getId(), plannerId);
         if (planner.isCompleted()) {
@@ -55,6 +64,9 @@ public class PlannerService {
         plannerRepository.save(planner);
     }
 
+    /**
+     * 플래너 완료
+     */
     public void completePlannerById(User user, UUID plannerId, CompletePlannerRequestDto requestDto) {
         Planner planner = findPlanner(user.getId(), plannerId);
         if (!requestDto.getIsCompleted() || planner.isCompleted()) {
@@ -65,6 +77,9 @@ public class PlannerService {
         plannerRepository.save(planner);
     }
 
+    /**
+     * 완료 상태의 플래너 전체 목록 조회
+     */
     public GroupedCompletedPlannerResponse getCompletedPlannersGroupedByDate(User user) {
         CompletedPlannerListResponseData completedPlannerList = getAllCompletedPlanners(user);
 
@@ -87,6 +102,9 @@ public class PlannerService {
         return new GroupedCompletedPlannerResponse(sortedGroupedPlanners);
     }
 
+    /**
+     * 완료된 플래너 전체 목록 조회
+     */
     private CompletedPlannerListResponseData getAllCompletedPlanners(User user) {
         List<Planner> completedPlanners = plannerRepository.findByIsCompletedAndUser(true, user);
         List<CompletedPlannerResponse> completedPlannerResponses = completedPlanners.stream()
@@ -96,6 +114,9 @@ public class PlannerService {
         return new CompletedPlannerListResponseData(completedPlannerResponses);
     }
 
+    /**
+     * 월별 완료된 플래너 잔디 타입 조회
+     */
     public DailyPlannerCompletionDataList getMonthlyPlannerStats(User user, String month) {
         LocalDate startDate = LocalDate.parse(month + "-01");
         LocalDate endDate = startDate.with(TemporalAdjusters.lastDayOfMonth());
@@ -111,6 +132,9 @@ public class PlannerService {
         return DailyPlannerCompletionDataList.from(dailyCounts);
     }
 
+    /**
+     * 플래너 삭제
+     */
     public void deletePlanner(User user, UUID plannerId) {
         Planner planner = findPlanner(user.getId(), plannerId);
         if(planner.isCompleted()){

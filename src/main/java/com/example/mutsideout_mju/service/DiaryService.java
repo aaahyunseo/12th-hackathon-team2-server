@@ -25,13 +25,16 @@ public class DiaryService {
 
     private final DiaryRepository diaryRepository;
 
-    //감정일기 전체 목록 조회
+    /**
+     * 감정일기 전체 목록 조회
+     */
     public DiaryListResponseData getDiaryList(User user, PaginationDto paginationDto) {
 
         //요청받은 페이지 번호, 페이지 크기, 작성순으로 정렬
         Pageable pageable = PageRequest.of(paginationDto.getPage(), paginationDto.getPAGE_SIZE(), Sort.by(Sort.Order.desc("createdAt")));
 
-        Page<Diary> diaryPage = diaryRepository.findByUserId(user.getId(), pageable);  //특정 유저의 해당 페이지 데이터를 모두 가져옴
+        //특정 유저의 해당 페이지 데이터를 모두 가져옴
+        Page<Diary> diaryPage = diaryRepository.findByUserId(user.getId(), pageable);
 
         if (diaryPage.getTotalPages() <= paginationDto.getPage() && paginationDto.getPage() != 0) {
             throw new NotFoundException(ErrorCode.NOT_FOUND_PAGE);
@@ -40,7 +43,9 @@ public class DiaryService {
         return DiaryListResponseData.from(diaryPage);
     }
 
-    //감정일기 상세 조회
+    /**
+     * 감정일기 상세 조회
+     */
     public DiaryResponseData getDiaryById(User user, UUID diaryId) {
         Diary diary = findDiary(user.getId(), diaryId);
         return DiaryResponseData.from(diary);
@@ -51,7 +56,9 @@ public class DiaryService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.DIARY_NOT_FOUND));
     }
 
-    //감정일기 작성
+    /**
+     * 감정일기 생성
+     */
     public void writeDiary(User user, WriteDiaryDto writeDiaryDto) {
         Diary diary = Diary.builder()
                 .user(user)
@@ -61,7 +68,9 @@ public class DiaryService {
         diaryRepository.save(diary);
     }
 
-    //감정일기 수정
+    /**
+     * 감정일기 수정
+     */
     public void updateDiaryById(User user, UUID diaryId, UpdateDiaryDto updateDiaryDto) {
         Diary newDiary = findDiary(user.getId(), diaryId);
         newDiary.setTitle(updateDiaryDto.getTitle())
@@ -69,7 +78,9 @@ public class DiaryService {
         diaryRepository.save(newDiary);
     }
 
-    //감정일기 삭제
+    /**
+     * 감정일기 삭제
+     */
     public void deleteDiaryById(User user, UUID diaryId){
         Diary diary = findDiary(user.getId(), diaryId);
         diaryRepository.delete(diary);

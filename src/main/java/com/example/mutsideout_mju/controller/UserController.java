@@ -20,12 +20,14 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
+    // 유저 등급 조회
     @GetMapping("/grade")
     public ResponseEntity<ResponseDto<UserGradeResponseDto>> getUserGrade(@AuthenticatedUser User user) {
         UserGradeResponseDto userGradeResponseDto = userService.getUserGrade(user);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "유저 등급 조회 완료", userGradeResponseDto), HttpStatus.OK);
     }
 
+    // 유저 정보 수정
     @PatchMapping
     public ResponseEntity<ResponseDto<UserGradeResponseDto>> updateUser(@AuthenticatedUser User user,
                                                                         @RequestBody @Valid UpdateUserDto updateUserDto) {
@@ -33,6 +35,7 @@ public class UserController {
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "유저 정보 수정 완료"), HttpStatus.OK);
     }
 
+    // 유저 탈퇴
     @DeleteMapping
     public ResponseEntity<ResponseDto<UserGradeResponseDto>> deleteUser(@AuthenticatedUser User user,
                                                                         @RequestBody @Valid DeleteUserDto deleteUserDto) {
@@ -40,6 +43,7 @@ public class UserController {
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "회원 탈퇴 성공"), HttpStatus.OK);
     }
 
+    // 유저 전체 정보(이메일, 이름, 등급) 조회
     @GetMapping("/mypage")
     public ResponseEntity<ResponseDto<ProfileResponseData>> getMyPage(@AuthenticatedUser User user) {
         ProfileResponseData profileResponseData = userService.getMyPage(user);
