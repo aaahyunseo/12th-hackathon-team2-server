@@ -42,16 +42,16 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseDto<TokenResponseDto>> login(@RequestBody @Valid LoginDto loginDto, HttpServletResponse response) {
+    public ResponseEntity<ResponseDto<Void>> login(@RequestBody @Valid LoginDto loginDto, HttpServletResponse response) {
         TokenResponseDto tokenResponseDto = authService.login(loginDto);
         setCookie(response, JwtEncoder.encode(tokenResponseDto.getAccessToken()));
-        setCookieForRefreshToken(response, tokenResponseDto.getRefreshToken().getToken());
-        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "로그인 완료", tokenResponseDto), HttpStatus.OK);
+        setCookieForRefreshToken(response, tokenResponseDto.getRefreshToken());
+        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "로그인 완료"), HttpStatus.OK);
     }
 
     private static void setCookie(HttpServletResponse response, String accessToken) {
         ResponseCookie cookie = ResponseCookie.from(AuthenticationExtractor.TOKEN_COOKIE_NAME, accessToken)
-                .maxAge(Duration.ofMinutes(5))
+                .maxAge(Duration.ofMinutes(30))
                 .path("/")
                 .httpOnly(true)
                 .sameSite("None").secure(true)
@@ -63,7 +63,7 @@ public class AuthController {
     private static void setCookieForRefreshToken(HttpServletResponse response, String refreshToken) {
         ResponseCookie cookie_refresh = ResponseCookie.from("RefreshToken", refreshToken)
                 .maxAge(Duration.ofDays(7))
-                .path("/auth/refresh")
+                .path("/")
                 .httpOnly(true)
                 .sameSite("None")
                 .secure(true)
@@ -73,7 +73,7 @@ public class AuthController {
     }
 
     @GetMapping("/refresh")
-    public ResponseEntity<ResponseDto<TokenResponseDto>> refresh(HttpServletResponse response, HttpServletRequest request) {
+    public ResponseEntity<ResponseDto<Void>> refresh(HttpServletResponse response, HttpServletRequest request) {
         String refreshToken = getRefreshTokenFromCookie(request);
         TokenResponseDto tokenResponseDto;
         try {
@@ -82,9 +82,9 @@ public class AuthController {
             return new ResponseEntity<>(ResponseDto.res(HttpStatus.UNAUTHORIZED, "Refresh token 만료 혹은 부적절"), HttpStatus.UNAUTHORIZED);
         }
         setCookie(response, JwtEncoder.encode(tokenResponseDto.getAccessToken()));
-        setCookieForRefreshToken(response, tokenResponseDto.getRefreshToken().getToken());
+        setCookieForRefreshToken(response, tokenResponseDto.getRefreshToken());
 
-        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "Refresh token 재생성 완료", tokenResponseDto), HttpStatus.OK);
+        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "Refresh token 재생성 완료"), HttpStatus.OK);
     }
 
     private String getRefreshTokenFromCookie(HttpServletRequest request) {
@@ -107,7 +107,7 @@ public class AuthController {
 
         ResponseCookie refreshCookie = ResponseCookie.from("RefreshToken", null)
                 .maxAge(0)
-                .path("/auth/refresh")
+                .path("/")
                 .httpOnly(true)
                 .sameSite("None")
                 .secure(true)
