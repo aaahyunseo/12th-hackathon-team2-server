@@ -62,7 +62,7 @@ public class AuthController {
 
     private static void setCookieForRefreshToken(HttpServletResponse response, String refreshToken) {
         ResponseCookie cookie_refresh = ResponseCookie.from("RefreshToken", refreshToken)
-                .maxAge(Duration.ofDays(7))
+                .maxAge(Duration.ofDays(14))
                 .path("/")
                 .httpOnly(true)
                 .sameSite("None")
