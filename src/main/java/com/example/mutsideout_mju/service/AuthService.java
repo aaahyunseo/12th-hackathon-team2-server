@@ -73,17 +73,22 @@ public class AuthService {
         return createToken(user);
     }
 
+    // accessToken, refreshToken 재생성.
     public TokenResponseDto refresh(String refreshToken) {
         User user = validateRefreshToken(refreshToken);
         return createToken(user);
     }
 
+    // refreshToken 관리
     private User validateRefreshToken(String refreshToken) {
         RefreshToken storedRefreshToken = refreshTokenRepository.findByToken(refreshToken);
+
+        // 저장된 refreshToken이 없는 경우
         if (storedRefreshToken == null) {
             throw new UnauthorizedException(ErrorCode.INVALID_REFRESH_TOKEN, "  저장된 RefreshToken이 null 입니다. ");
         }
 
+        // 저장된 refreshToken이 만료된 경우
         if (jwtTokenProvider.isTokenExpired(storedRefreshToken.getToken())) {
             throw new UnauthorizedException(ErrorCode.INVALID_REFRESH_TOKEN, "토큰이 만료됐습니다.");
         }
@@ -95,11 +100,13 @@ public class AuthService {
     private TokenResponseDto createToken(User user) {
         String payload = String.valueOf(user.getId());
         String accessToken = jwtTokenProvider.createToken(payload);
+        // refreshToken 생성.
         String refreshTokenValue = jwtTokenProvider.createRefreshToken();
 
         RefreshToken refreshToken = refreshTokenRepository.findByUserId(user.getId())
                 .orElse(new RefreshToken(user.getId(), refreshTokenValue));
 
+        // refreshToken db에 저장.
         refreshToken.setToken(refreshTokenValue);
         refreshTokenRepository.save(refreshToken);
 
