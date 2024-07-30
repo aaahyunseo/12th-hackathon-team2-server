@@ -32,14 +32,14 @@ public class RefreshToken {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
+    public RefreshToken(UUID id, String refreshTokenValue) {
+        this.userId = id;
+        this.token = refreshTokenValue;
+    }
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
-    }
-
-    public RefreshToken(UUID userId, String token) {
-        this.userId = userId;
-        this.token = token;
     }
 
     public void setId(UUID id) {
