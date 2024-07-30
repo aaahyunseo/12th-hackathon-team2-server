@@ -6,8 +6,6 @@ import com.example.mutsideout_mju.dto.request.auth.LoginDto;
 import com.example.mutsideout_mju.dto.request.auth.SignupDto;
 import com.example.mutsideout_mju.dto.response.ResponseDto;
 import com.example.mutsideout_mju.dto.response.token.TokenResponseDto;
-import com.example.mutsideout_mju.entity.User;
-import com.example.mutsideout_mju.exception.NotFoundException;
 import com.example.mutsideout_mju.exception.UnauthorizedException;
 import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.service.AuthService;
@@ -16,16 +14,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.Duration;
-import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
