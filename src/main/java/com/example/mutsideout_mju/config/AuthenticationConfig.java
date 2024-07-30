@@ -20,7 +20,7 @@ public class AuthenticationConfig implements WebMvcConfigurer {
     public void addInterceptors(final InterceptorRegistry registry) {
         registry.addInterceptor(authenticationInterceptor)
                 .addPathPatterns("/planners/**", "/diaries/**", "/rooms/**", "/users/**", "/surveys", "/auth/logout")
-                .excludePathPatterns("/auth/signup", "/auth/login");
+                .excludePathPatterns("/auth/signup", "/auth/login", "/auth/refresh");
     }
 
     @Override

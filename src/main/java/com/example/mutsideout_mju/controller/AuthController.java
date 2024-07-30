@@ -6,10 +6,13 @@ import com.example.mutsideout_mju.dto.request.auth.LoginDto;
 import com.example.mutsideout_mju.dto.request.auth.SignupDto;
 import com.example.mutsideout_mju.dto.response.ResponseDto;
 import com.example.mutsideout_mju.dto.response.token.TokenResponseDto;
+import com.example.mutsideout_mju.exception.UnauthorizedException;
+import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.service.AuthService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -38,28 +41,82 @@ public class AuthController {
     public ResponseEntity<ResponseDto<Void>> login(@RequestBody @Valid LoginDto loginDto, HttpServletResponse response) {
         TokenResponseDto tokenResponseDto = authService.login(loginDto);
         setCookie(response, JwtEncoder.encode(tokenResponseDto.getAccessToken()));
+        setCookieForRefreshToken(response, tokenResponseDto.getRefreshToken());
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "로그인 완료"), HttpStatus.OK);
     }
 
     private static void setCookie(HttpServletResponse response, String accessToken) {
         ResponseCookie cookie = ResponseCookie.from(AuthenticationExtractor.TOKEN_COOKIE_NAME, accessToken)
-                .maxAge(Duration.ofMillis(1800000))
+                .maxAge(Duration.ofMinutes(30))
                 .path("/")
                 .httpOnly(true)
                 .sameSite("None").secure(true)
                 .build();
+
         response.addHeader("set-cookie", cookie.toString());
+    }
+
+    private static void setCookieForRefreshToken(HttpServletResponse response, String refreshToken) {
+        ResponseCookie cookie_refresh = ResponseCookie.from("RefreshToken", refreshToken)
+                .maxAge(Duration.ofDays(14))
+                .path("/")
+                .httpOnly(true)
+                .sameSite("None")
+                .secure(true)
+                .build();
+
+        response.addHeader("set-cookie", cookie_refresh.toString());
+    }
+
+    @GetMapping("/refresh")
+    public ResponseEntity<ResponseDto<Void>> refresh(HttpServletResponse response, HttpServletRequest request) {
+        String refreshToken = getRefreshTokenFromCookie(request);
+        TokenResponseDto tokenResponseDto;
+        try {
+            tokenResponseDto = authService.refresh(refreshToken);
+        } catch (UnauthorizedException e) {
+            return new ResponseEntity<>(ResponseDto.res(HttpStatus.UNAUTHORIZED, "Refresh token 만료 혹은 부적절"), HttpStatus.UNAUTHORIZED);
+        }
+        setCookie(response, JwtEncoder.encode(tokenResponseDto.getAccessToken()));
+        setCookieForRefreshToken(response, tokenResponseDto.getRefreshToken());
+
+        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "Refresh token 재생성 완료"), HttpStatus.OK);
+    }
+
+    private String getRefreshTokenFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("RefreshToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        throw new UnauthorizedException(ErrorCode.INVALID_TOKEN);
+    }
+
+    private void clearCookies(HttpServletResponse response) {
+        ResponseCookie accessCookie = ResponseCookie.from("AccessToken", null)
+                .maxAge(0)
+                .path("/")
+                .build();
+
+        ResponseCookie refreshCookie = ResponseCookie.from("RefreshToken", null)
+                .maxAge(0)
+                .path("/")
+                .httpOnly(true)
+                .sameSite("None")
+                .secure(true)
+                .build();
+
+        response.addHeader("Set-Cookie", accessCookie.toString());
+        response.addHeader("Set-Cookie", refreshCookie.toString());
     }
 
     // 로그아웃
     @GetMapping("/logout")
     public ResponseEntity<ResponseDto<Void>> logout(final HttpServletResponse response) {
-        ResponseCookie cookie = ResponseCookie.from("AccessToken", null)
-                .maxAge(0)
-                .path("/")
-                .build();
-        response.addHeader("set-cookie", cookie.toString());
-
+        clearCookies(response);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "로그아웃 완료"), HttpStatus.OK);
     }
 }

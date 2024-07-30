@@ -2,9 +2,7 @@ package com.example.mutsideout_mju.authentication;
 
 import com.example.mutsideout_mju.exception.UnauthorizedException;
 import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Date;
 @Slf4j
 @Component
@@ -49,6 +48,34 @@ public class JwtTokenProvider {
                     .getSubject();
             return payload;
         } catch (JwtException e) {
+            throw new UnauthorizedException(ErrorCode.INVALID_TOKEN, e.getMessage());
+        }
+    }
+
+    public String createRefreshToken() {
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + Duration.ofDays(7).toMillis());
+
+        return Jwts.builder()
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .signWith(SignatureAlgorithm.HS256, key)
+                .compact();
+    }
+
+    public boolean isTokenExpired(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            return claims.getExpiration().before(new Date());
+        } catch (ExpiredJwtException e) {
+            return true;
+        } catch (JwtException e) {
+            log.error("Invalid JWT token: {}", e.getMessage());
             throw new UnauthorizedException(ErrorCode.INVALID_TOKEN, e.getMessage());
         }
     }
