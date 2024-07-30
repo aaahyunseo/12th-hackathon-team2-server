@@ -1,21 +1,20 @@
 package com.example.mutsideout_mju.dto.response.user;
 
-import com.example.mutsideout_mju.entity.Grade;
+import com.example.mutsideout_mju.entity.UserGrade;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.context.annotation.Profile;
 
 @Getter
 @Builder
 public class ProfileResponseData {
     private String email;
     private String name;
-    private Grade grade;
+    private UserGrade userGrade;
 
-    public static ProfileResponseData of(String email, String name, Grade grade) {
+    public static ProfileResponseData of(String email, String name, UserGrade userGrade) {
         return builder()
                 .email(email)
-                .grade(grade)
+                .userGrade(userGrade)
                 .name(name)
                 .build();
     }

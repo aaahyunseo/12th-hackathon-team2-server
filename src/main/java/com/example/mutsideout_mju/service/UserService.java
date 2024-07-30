@@ -5,7 +5,7 @@ import com.example.mutsideout_mju.dto.request.user.DeleteUserDto;
 import com.example.mutsideout_mju.dto.request.user.UpdateUserDto;
 import com.example.mutsideout_mju.dto.response.user.ProfileResponseData;
 import com.example.mutsideout_mju.dto.response.user.UserGradeResponseDto;
-import com.example.mutsideout_mju.entity.Grade;
+import com.example.mutsideout_mju.entity.UserGrade;
 import com.example.mutsideout_mju.entity.SurveyOption;
 import com.example.mutsideout_mju.entity.User;
 import com.example.mutsideout_mju.entity.UserSurvey;
@@ -37,19 +37,19 @@ public class UserService {
         long count = userSurveyList.stream()
                 .filter(userSurvey -> isValidSurveyOption(userSurvey))
                 .count();
-        Grade grade = user.determineGrade(count);
+        UserGrade userGrade = user.determineGrade(count);
 
-        user.setGrade(grade);
+        user.setUserGrade(userGrade);
         userRepository.save(user);
 
-        return UserGradeResponseDto.of(user.getName(), grade);
+        return UserGradeResponseDto.of(user.getName(), userGrade);
     }
 
     /**
      * 유저 등급 반환
      */
     public UserGradeResponseDto getUserGrade(User user) {
-        return UserGradeResponseDto.from(user.getGrade());
+        return UserGradeResponseDto.from(user.getUserGrade());
     }
 
     /**
@@ -94,7 +94,7 @@ public class UserService {
      * 유저 전체 정보(이메일, 이름, 등급) 조회
      */
     public ProfileResponseData getMyPage(User user){
-        ProfileResponseData profileResponseData = ProfileResponseData.of(user.getEmail(), user.getName(), user.getGrade());
+        ProfileResponseData profileResponseData = ProfileResponseData.of(user.getEmail(), user.getName(), user.getUserGrade());
         return profileResponseData;
     }
 
