@@ -81,15 +81,15 @@ public class AuthService {
     private User validateRefreshToken(String refreshToken) {
         RefreshToken storedRefreshToken = refreshTokenRepository.findByToken(refreshToken);
         if (storedRefreshToken == null) {
-            throw new UnauthorizedException(ErrorCode.INVALID_TOKEN, "storedRefreshToken is null");
+            throw new UnauthorizedException(ErrorCode.INVALID_REFRESH_TOKEN, "  저장된 RefreshToken이 null 입니다. ");
         }
 
         if (jwtTokenProvider.isTokenExpired(storedRefreshToken.getToken())) {
-            throw new UnauthorizedException(ErrorCode.INVALID_TOKEN, "token is expired");
+            throw new UnauthorizedException(ErrorCode.INVALID_REFRESH_TOKEN, "토큰이 만료됐습니다.");
         }
 
         return userRepository.findById(storedRefreshToken.getUserId())
-                .orElseThrow(() -> new UnauthorizedException(ErrorCode.INVALID_TOKEN, "user not found"));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 
     private TokenResponseDto createToken(User user) {
@@ -103,7 +103,7 @@ public class AuthService {
         refreshToken.setToken(refreshTokenValue);
         refreshTokenRepository.save(refreshToken);
 
-        return new TokenResponseDto(accessToken, refreshToken);
+        return new TokenResponseDto(accessToken, refreshTokenValue);
     }
 
     private User findExistingUserByEmail(String email) {
