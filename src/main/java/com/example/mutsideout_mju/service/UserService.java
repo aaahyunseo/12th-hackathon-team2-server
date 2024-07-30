@@ -90,12 +90,17 @@ public class UserService {
         userRepository.save(user);
     }
 
+    /**
+     * 유저 정보(이메일, 이름, 등급) 조회
+     */
     public ProfileResponseData getMyPage(User user){
         ProfileResponseData profileResponseData = ProfileResponseData.of(user.getEmail(), user.getName(), user.getGrade());
         return profileResponseData;
     }
 
-    //비밀번호 일치 여부 확인
+    /**
+     * 비밀번호 일치 여부 확인
+     */
     public void validatePassword(String plainPassword, String hashedPassword) {
         if (!passwordHashEncryption.matches(plainPassword, hashedPassword)) {
             throw new ForbiddenException(ErrorCode.NO_ACCESS, "비밀번호 정보가 일치하지 않습니다.");
