@@ -23,42 +23,42 @@ import java.util.UUID;
 public class PlannerController {
     private final PlannerService plannerService;
 
-    // 모든 미완료 상태의 planner 조회하기
+    // 미완료 상태의 플래너 전체 조회
     @GetMapping
     public ResponseEntity<ResponseDto<PlannerListResponseData>> getAllPlanners(@AuthenticatedUser User user) {
         PlannerListResponseData planners = plannerService.getAllPlanners(user);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "미완료 상태 플래너 전체 조회", planners), HttpStatus.OK);
     }
 
-    // 새 planner 생성
+    // 플래너 생성
     @PostMapping
     public ResponseEntity<ResponseDto<Void>> createPlanner(@AuthenticatedUser User user, @RequestBody @Valid PlannerDto plannerDto) {
         plannerService.createPlanner(user, plannerDto);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.CREATED, "플래너 생성"), HttpStatus.CREATED);
     }
 
-    // planner 수정
+    // 플래너 수정
     @PatchMapping("/{plannerId}")
     public ResponseEntity<ResponseDto<Void>> updatePlanner(@AuthenticatedUser User user, @RequestBody @Valid PlannerDto plannerDto, @PathVariable UUID plannerId) {
         plannerService.updatePlanner(user, plannerId, plannerDto);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "플랜 수정 완료"), HttpStatus.OK);
     }
 
-    // 완료 상태의 planner들 조회하기
+    // 완료 상태의 플래너 전체 목록 조회
     @GetMapping("/completed")
     public ResponseEntity<ResponseDto<GroupedCompletedPlannerResponse>> getAllCompletedPlanners(@AuthenticatedUser User user) {
         GroupedCompletedPlannerResponse completedPlanners = plannerService.getCompletedPlannersGroupedByDate(user);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "완료된 플래너 전체 조회", completedPlanners), HttpStatus.OK);
     }
 
-    // planner 삭제
+    // 플래너 삭제
     @DeleteMapping("/{plannerId}")
     public ResponseEntity<ResponseDto<Void>> deletePlanner(@AuthenticatedUser User user, @PathVariable UUID plannerId) {
         plannerService.deletePlanner(user, plannerId);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "플랜 삭제 완료"), HttpStatus.OK);
     }
 
-    // planner 완료하기
+    // 플래너 완료
     @PutMapping("/{plannerId}")
     public ResponseEntity<ResponseDto<Void>> completePlannerById(
             @AuthenticatedUser User user,
@@ -68,6 +68,7 @@ public class PlannerController {
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "플래너 완료 상태로 변경"), HttpStatus.OK);
     }
 
+    // 월별 플래너 잔디 타입 조회
     @GetMapping("/calendars")
     public ResponseEntity<ResponseDto<DailyPlannerCompletionDataList>> getMonthlyPlannersStats(
             @AuthenticatedUser User user,

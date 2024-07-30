@@ -35,9 +35,9 @@ public class CustomPlannerRepositoryImpl implements CustomPlannerRepository {
                         planner.user.id.eq(userId)
                         // 이미 완료된 플래너들을 선택
                         .and(planner.isCompleted.isTrue())
-                        // modifiedDate 가 startDate 자정 ~ endDate 23시 59분 59초 사이인 플래너들을 선택
+                        // modifiedDate가 startDate 자정 ~ endDate 23시 59분 59초 사이인 플래너들을 선택
                         .and(planner.modifiedDate.between(startDate.atStartOfDay(), endDate.atTime(23, 59, 59))))
-                // modifiedDate 의 년,월,일을 기준으로 그룹화 후 카운트
+                // modifiedDate 년,월,일을 기준으로 그룹화 후 카운트
                 .groupBy(planner.modifiedDate.year(),
                         planner.modifiedDate.month(),
                         planner.modifiedDate.dayOfMonth())
