@@ -14,6 +14,8 @@ public class Diary extends BaseEntity {
     private String title;
     @Column(nullable = false)
     private String content;
+    @Column
+    private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -26,6 +28,11 @@ public class Diary extends BaseEntity {
 
     public Diary setContent(String content) {
         this.content = content;
+        return this;
+    }
+
+    public Diary setImageUrl(String imageUrl){
+        this.imageUrl = imageUrl;
         return this;
     }
 }
