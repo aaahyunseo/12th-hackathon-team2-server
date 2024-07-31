@@ -1,9 +1,8 @@
-package com.example.mutsideout_mju.repository;
+package com.example.mutsideout_mju.repository.planner;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;

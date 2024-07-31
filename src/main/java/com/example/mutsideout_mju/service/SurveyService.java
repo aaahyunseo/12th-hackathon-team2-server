@@ -8,7 +8,7 @@ import com.example.mutsideout_mju.exception.ConflictException;
 import com.example.mutsideout_mju.exception.NotFoundException;
 import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.repository.SurveyRepository;
-import com.example.mutsideout_mju.repository.UserSurveyRepository;
+import com.example.mutsideout_mju.repository.usersurvey.UserSurveyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

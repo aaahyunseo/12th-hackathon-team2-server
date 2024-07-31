@@ -8,18 +8,18 @@ import lombok.Getter;
 @Builder
 public class UserGradeResponseDto {
     private String name;
-    private UserGrade userGrade;
+    private UserGrade grade;
 
     public static UserGradeResponseDto of(String name, UserGrade userGrade) {
         return UserGradeResponseDto.builder()
                 .name(name)
-                .userGrade(userGrade)
+                .grade(userGrade)
                 .build();
     }
 
     public static UserGradeResponseDto from(UserGrade userGrade) {
         return UserGradeResponseDto.builder()
-                .userGrade(userGrade)
+                .grade(userGrade)
                 .build();
     }
 }

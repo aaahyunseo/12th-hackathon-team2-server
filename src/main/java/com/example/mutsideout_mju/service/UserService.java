@@ -6,19 +6,15 @@ import com.example.mutsideout_mju.dto.request.user.UpdateUserDto;
 import com.example.mutsideout_mju.dto.response.user.ProfileResponseData;
 import com.example.mutsideout_mju.dto.response.user.UserGradeResponseDto;
 import com.example.mutsideout_mju.entity.UserGrade;
-import com.example.mutsideout_mju.entity.SurveyOption;
 import com.example.mutsideout_mju.entity.User;
-import com.example.mutsideout_mju.entity.UserSurvey;
 import com.example.mutsideout_mju.exception.ConflictException;
 import com.example.mutsideout_mju.exception.ForbiddenException;
 import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.repository.UserRepository;
-import com.example.mutsideout_mju.repository.UserSurveyRepository;
+import com.example.mutsideout_mju.repository.usersurvey.UserSurveyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,15 +24,11 @@ public class UserService {
     private final PasswordHashEncryption passwordHashEncryption;
 
     /**
-     * 유저 등급 계산
+     * 설문조사 유효 응답갯수로 유저 등급 계산
      */
     @Transactional
     public UserGradeResponseDto calculateUserGrade(User user) {
-        List<UserSurvey> userSurveyList = userSurveyRepository.findByUserId(user.getId());
-
-        long count = userSurveyList.stream()
-                .filter(userSurvey -> isValidSurveyOption(userSurvey))
-                .count();
+        long count = userSurveyRepository.countValidSurveyResponse(user.getId());
         UserGrade userGrade = user.determineGrade(count);
 
         user.setUserGrade(userGrade);
@@ -50,17 +42,6 @@ public class UserService {
      */
     public UserGradeResponseDto getUserGrade(User user) {
         return UserGradeResponseDto.from(user.getUserGrade());
-    }
-
-    /**
-     * 설문조사 응답 유효 검사
-     */
-    public static boolean isValidSurveyOption(UserSurvey userSurvey) {
-        Long questionNumber = userSurvey.getSurvey().getNumber();
-        SurveyOption option = userSurvey.getSurveyOption();
-
-        return (questionNumber >= 1 && questionNumber <= 3 && (option == SurveyOption.NORMAL || option == SurveyOption.YES))
-                || (questionNumber >= 4 && questionNumber <= 6 && option == SurveyOption.YES);
     }
 
     /**

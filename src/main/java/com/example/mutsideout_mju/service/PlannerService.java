@@ -9,7 +9,7 @@ import com.example.mutsideout_mju.exception.ForbiddenException;
 import com.example.mutsideout_mju.exception.NotFoundException;
 import com.example.mutsideout_mju.exception.UnauthorizedException;
 import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
-import com.example.mutsideout_mju.repository.PlannerRepository;
+import com.example.mutsideout_mju.repository.planner.PlannerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
