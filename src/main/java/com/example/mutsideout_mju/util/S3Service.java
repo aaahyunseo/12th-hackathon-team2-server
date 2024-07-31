@@ -11,6 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -46,16 +48,23 @@ public class S3Service {
         }
     }
 
-    public String uploadImage(MultipartFile file) throws IOException {
-        String dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
-        String extension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+    public List<String> uploadImage(List<MultipartFile> files) throws IOException {
+        List<String> imageUrls = new ArrayList<>();
 
-        String key = "diaries/" + UUID.randomUUID().toString() + "-" + dateTime + extension;
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(file.getSize());
-        metadata.setContentType(file.getContentType());
-        s3client.putObject(bucketName, key, file.getInputStream(), metadata);
-        return generateFileUrl(key);
+        for(MultipartFile file : files){
+            String dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
+            String extension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+
+            String key = "diaries/" + UUID.randomUUID().toString() + "-" + dateTime + extension;
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(file.getSize());
+            metadata.setContentType(file.getContentType());
+            s3client.putObject(bucketName, key, file.getInputStream(), metadata);
+
+            String imageUrl = generateFileUrl(key);
+            imageUrls.add(imageUrl);
+        }
+        return imageUrls;
     }
 
     public void deleteImage(String imageUrl) {
