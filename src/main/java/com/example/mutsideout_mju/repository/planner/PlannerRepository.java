@@ -1,4 +1,4 @@
-package com.example.mutsideout_mju.repository;
+package com.example.mutsideout_mju.repository.planner;
 
 import com.example.mutsideout_mju.entity.Planner;
 import com.example.mutsideout_mju.entity.User;

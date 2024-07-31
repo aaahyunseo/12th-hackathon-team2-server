@@ -1,4 +1,4 @@
-package com.example.mutsideout_mju.repository;
+package com.example.mutsideout_mju.repository.planner;
 
 import java.time.LocalDate;
 import java.util.Map;
