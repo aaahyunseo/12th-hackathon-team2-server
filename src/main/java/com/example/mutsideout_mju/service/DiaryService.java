@@ -82,10 +82,10 @@ public class DiaryService {
     @Transactional
     public void updateDiaryById(User user, UUID diaryId, UpdateDiaryDto updateDiaryDto, List<MultipartFile> images) throws IOException {
         Diary newDiary = findDiary(user.getId(), diaryId);
-
-        imageService.deleteImages(newDiary);
-        imageService.uploadImages(user, newDiary, images);
-
+        if (images != null) {
+            imageService.deleteImages(newDiary);
+            imageService.uploadImages(user, newDiary, images);
+        }
         newDiary.setTitle(updateDiaryDto.getTitle())
                 .setContent(updateDiaryDto.getContent());
 
