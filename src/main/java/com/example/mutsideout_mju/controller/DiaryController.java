@@ -15,7 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @Controller
@@ -42,15 +44,20 @@ public class DiaryController {
 
     //감정일기 작성
     @PostMapping
-    public ResponseEntity<ResponseDto<Void>> writeDiary(@AuthenticatedUser User user, @RequestBody @Valid WriteDiaryDto writeDiaryDto) {
-        diaryService.writeDiary(user, writeDiaryDto);
+    public ResponseEntity<ResponseDto<Void>> writeDiary(@AuthenticatedUser User user,
+                                                        @RequestPart(value = "data") @Valid WriteDiaryDto writeDiaryDto,
+                                                        @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {
+        diaryService.writeDiary(user, writeDiaryDto, image);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.CREATED, "감정일기가 정상적으로 작성되었습니다."), HttpStatus.CREATED);
     }
 
     //감정일기 수정
     @PatchMapping("/{diaryId}")
-    public ResponseEntity<ResponseDto<Void>> updateDiaryById(@AuthenticatedUser User user, @PathVariable UUID diaryId, @RequestBody @Valid UpdateDiaryDto updateDiaryDto) {
-        diaryService.updateDiaryById(user, diaryId, updateDiaryDto);
+    public ResponseEntity<ResponseDto<Void>> updateDiaryById(@AuthenticatedUser User user,
+                                                             @PathVariable UUID diaryId,
+                                                             @RequestPart("data") @Valid UpdateDiaryDto updateDiaryDto,
+                                                             @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {
+        diaryService.updateDiaryById(user, diaryId, updateDiaryDto, image);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "감정일기가 정상적으로 수정되었습니다."), HttpStatus.OK);
     }
 
