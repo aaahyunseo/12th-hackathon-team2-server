@@ -16,7 +16,7 @@ public class DiaryResponseData {
     private UUID id;
     private String title;
     private String content;
-    private List<String> images;
+    private List<String> imageUrls;
     private String createdAt;
 
     public static DiaryResponseData from(Diary diary) {
@@ -28,7 +28,7 @@ public class DiaryResponseData {
                 .id(diary.getId())
                 .title(diary.getTitle())
                 .content(diary.getContent())
-                .images(images)
+                .imageUrls(images)
                 .createdAt(diary.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                 .build();
     }
