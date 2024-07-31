@@ -10,13 +10,16 @@ import com.example.mutsideout_mju.entity.User;
 import com.example.mutsideout_mju.exception.NotFoundException;
 import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.repository.DiaryRepository;
+import com.example.mutsideout_mju.util.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @Service
@@ -24,6 +27,7 @@ import java.util.UUID;
 public class DiaryService {
 
     private final DiaryRepository diaryRepository;
+    private final S3Service s3Service;
 
     /**
      * 감정일기 전체 목록 조회
@@ -59,11 +63,17 @@ public class DiaryService {
     /**
      * 감정일기 생성
      */
-    public void writeDiary(User user, WriteDiaryDto writeDiaryDto) {
+    public void writeDiary(User user, WriteDiaryDto writeDiaryDto, MultipartFile image) throws IOException {
+        String imageUrl = null;
+        if (image != null && !image.isEmpty()) {
+            imageUrl = s3Service.uploadImage(image);
+        }
+
         Diary diary = Diary.builder()
                 .user(user)
                 .title(writeDiaryDto.getTitle())
                 .content(writeDiaryDto.getContent())
+                .imageUrl(imageUrl)
                 .build();
         diaryRepository.save(diary);
     }
@@ -71,8 +81,17 @@ public class DiaryService {
     /**
      * 감정일기 수정
      */
-    public void updateDiaryById(User user, UUID diaryId, UpdateDiaryDto updateDiaryDto) {
+    public void updateDiaryById(User user, UUID diaryId, UpdateDiaryDto updateDiaryDto, MultipartFile image) throws IOException {
         Diary newDiary = findDiary(user.getId(), diaryId);
+
+        if (image != null && !image.isEmpty()) {
+            //기존 이미지 삭제
+            if (newDiary.getImageUrl() != null) {
+                s3Service.deleteImage(newDiary.getImageUrl());
+            }
+            //새로운 이미지 업로드
+            newDiary.setImageUrl(s3Service.uploadImage(image));
+        }
         newDiary.setTitle(updateDiaryDto.getTitle())
                 .setContent(updateDiaryDto.getContent());
         diaryRepository.save(newDiary);
@@ -81,8 +100,11 @@ public class DiaryService {
     /**
      * 감정일기 삭제
      */
-    public void deleteDiaryById(User user, UUID diaryId){
+    public void deleteDiaryById(User user, UUID diaryId) {
         Diary diary = findDiary(user.getId(), diaryId);
+        if (diary.getImageUrl() != null) {
+            s3Service.deleteImage(diary.getImageUrl());
+        }
         diaryRepository.delete(diary);
     }
 }
