@@ -29,7 +29,7 @@ public class UserController {
 
     // 유저 정보 수정
     @PatchMapping
-    public ResponseEntity<ResponseDto<UserGradeResponseDto>> updateUser(@AuthenticatedUser User user,
+    public ResponseEntity<ResponseDto<Void>> updateUser(@AuthenticatedUser User user,
                                                                         @RequestBody @Valid UpdateUserDto updateUserDto) {
         userService.updateUser(user, updateUserDto);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "유저 정보 수정 완료"), HttpStatus.OK);
@@ -37,7 +37,7 @@ public class UserController {
 
     // 유저 탈퇴
     @DeleteMapping
-    public ResponseEntity<ResponseDto<UserGradeResponseDto>> deleteUser(@AuthenticatedUser User user,
+    public ResponseEntity<ResponseDto<Void>> deleteUser(@AuthenticatedUser User user,
                                                                         @RequestBody @Valid DeleteUserDto deleteUserDto) {
         userService.deleteUser(user, deleteUserDto);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "회원 탈퇴 성공"), HttpStatus.OK);

@@ -16,7 +16,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -24,6 +28,7 @@ import java.util.UUID;
 public class DiaryService {
 
     private final DiaryRepository diaryRepository;
+    private final ImageFileService imageService;
 
     /**
      * 감정일기 전체 목록 조회
@@ -59,30 +64,41 @@ public class DiaryService {
     /**
      * 감정일기 생성
      */
-    public void writeDiary(User user, WriteDiaryDto writeDiaryDto) {
+    @Transactional
+    public void writeDiary(User user, WriteDiaryDto writeDiaryDto, List<MultipartFile> images) throws IOException {
         Diary diary = Diary.builder()
                 .user(user)
                 .title(writeDiaryDto.getTitle())
                 .content(writeDiaryDto.getContent())
                 .build();
-        diaryRepository.save(diary);
+        diary = diaryRepository.save(diary);
+
+        imageService.uploadImages(user, diary, images);
     }
 
     /**
      * 감정일기 수정
      */
-    public void updateDiaryById(User user, UUID diaryId, UpdateDiaryDto updateDiaryDto) {
+    @Transactional
+    public void updateDiaryById(User user, UUID diaryId, UpdateDiaryDto updateDiaryDto, List<MultipartFile> images) throws IOException {
         Diary newDiary = findDiary(user.getId(), diaryId);
+        if (images != null) {
+            imageService.deleteImages(newDiary);
+            imageService.uploadImages(user, newDiary, images);
+        }
         newDiary.setTitle(updateDiaryDto.getTitle())
                 .setContent(updateDiaryDto.getContent());
+
         diaryRepository.save(newDiary);
     }
 
     /**
      * 감정일기 삭제
      */
-    public void deleteDiaryById(User user, UUID diaryId){
+    @Transactional
+    public void deleteDiaryById(User user, UUID diaryId) {
         Diary diary = findDiary(user.getId(), diaryId);
+        imageService.deleteImages(diary);
         diaryRepository.delete(diary);
     }
 }
