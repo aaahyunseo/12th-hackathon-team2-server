@@ -72,8 +72,9 @@ public class DiaryService {
                 .content(writeDiaryDto.getContent())
                 .build();
         diary = diaryRepository.save(diary);
-
-        imageService.uploadImages(user, diary, images);
+        if (images != null && !images.isEmpty()) {
+            imageService.uploadImages(user, diary, images);
+        }
     }
 
     /**
@@ -82,7 +83,7 @@ public class DiaryService {
     @Transactional
     public void updateDiaryById(User user, UUID diaryId, UpdateDiaryDto updateDiaryDto, List<MultipartFile> images) throws IOException {
         Diary newDiary = findDiary(user.getId(), diaryId);
-        if (images != null) {
+        if (images != null && !images.isEmpty()) {
             imageService.deleteImages(newDiary);
             imageService.uploadImages(user, newDiary, images);
         }
