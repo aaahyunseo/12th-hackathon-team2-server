@@ -24,17 +24,15 @@ public class ImageFileService {
      */
     @Transactional
     public void uploadImages(User user, Diary diary, List<MultipartFile> images) throws IOException {
-        if (images != null && !images.isEmpty()) {
-            List<String> imageUrls = s3Service.uploadImage(images);
+        List<String> imageUrls = s3Service.uploadImage(images);
 
-            for (String imageUrl : imageUrls) {
-                ImageFile newImage = ImageFile.builder()
-                        .imageUrl(imageUrl)
-                        .diary(diary)
-                        .user(user)
-                        .build();
-                imageFileRepository.save(newImage);
-            }
+        for (String imageUrl : imageUrls) {
+            ImageFile newImage = ImageFile.builder()
+                    .imageUrl(imageUrl)
+                    .diary(diary)
+                    .user(user)
+                    .build();
+            imageFileRepository.save(newImage);
         }
     }
 
