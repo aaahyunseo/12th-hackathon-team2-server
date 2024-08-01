@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -41,11 +42,10 @@ public class ImageFileService {
      */
     @Transactional
     public void deleteImages(Diary diary) {
-        if (diary.getImageFiles() != null) {
-            for (ImageFile img : diary.getImageFiles()) {
-                s3Service.deleteImage(img.getImageUrl());
-            }
-            imageFileRepository.deleteAll(diary.getImageFiles());
+        List<ImageFile> filesToDelete = new ArrayList<>(diary.getImageFiles());
+        if (!filesToDelete.isEmpty()) {
+            filesToDelete.forEach(img -> s3Service.deleteImage(img.getImageUrl()));
+            imageFileRepository.deleteAll(filesToDelete);
             diary.getImageFiles().clear();
         }
     }
