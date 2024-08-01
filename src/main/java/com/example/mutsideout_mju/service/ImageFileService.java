@@ -45,8 +45,8 @@ public class ImageFileService {
             for (ImageFile img : diary.getImageFiles()) {
                 s3Service.deleteImage(img.getImageUrl());
             }
-            diary.getImageFiles().clear();
             imageFileRepository.deleteAll(diary.getImageFiles());
+            diary.getImageFiles().clear();
         }
     }
 }
