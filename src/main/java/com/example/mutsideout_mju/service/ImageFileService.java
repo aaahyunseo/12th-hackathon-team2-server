@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +48,18 @@ public class ImageFileService {
             filesToDelete.forEach(img -> s3Service.deleteImage(img.getImageUrl()));
             imageFileRepository.deleteAll(filesToDelete);
             diary.getImageFiles().clear();
+        }
+    }
+
+    /**
+     * 특정 ID의 이미지 삭제
+     */
+    @Transactional
+    public void deleteImagesByImageIds(List<UUID> imageIds) {
+        if (imageIds != null && !imageIds.isEmpty()) {
+            List<ImageFile> filesToDelete = imageFileRepository.findAllById(imageIds);
+            filesToDelete.forEach(img -> s3Service.deleteImage(img.getImageUrl()));
+            imageFileRepository.deleteAllInBatch(filesToDelete);
         }
     }
 }
