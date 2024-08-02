@@ -7,9 +7,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpMediaTypeException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MultipartException;
 
 import static com.example.mutsideout_mju.exception.dto.ErrorResponseDto.res;
 
@@ -69,6 +72,23 @@ public class ExceptionController {
         return new ResponseEntity<>(res(dtoValidationException), HttpStatus.BAD_REQUEST);
     }
 
+    // HttpMediaTypeNotSupportedException 핸들러
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<ErrorResponseDto> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException httpMediaTypeNotSupportedException) {
+        this.writeLog(httpMediaTypeNotSupportedException);
+        return new ResponseEntity<>(
+                res(String.valueOf(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value()), httpMediaTypeNotSupportedException),
+                HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+    }
+
+    // MultipartException 핸들러
+    @ExceptionHandler(MultipartException.class)
+    public ResponseEntity<ErrorResponseDto> handleMultipartException(MultipartException multipartException) {
+        this.writeLog(multipartException);
+        return new ResponseEntity<>(
+                res(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), multipartException),
+                HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
     // 일반 예외 핸들러
     @ExceptionHandler(Exception.class)
