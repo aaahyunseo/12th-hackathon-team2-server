@@ -56,8 +56,9 @@ public class DiaryController {
     public ResponseEntity<ResponseDto<Void>> updateDiaryById(@AuthenticatedUser User user,
                                                              @PathVariable UUID diaryId,
                                                              @RequestPart("data") @Valid UpdateDiaryDto updateDiaryDto,
-                                                             @RequestPart(value = "image", required = false) List<MultipartFile> images) throws IOException {
-        diaryService.updateDiaryById(user, diaryId, updateDiaryDto, images);
+                                                             @RequestPart(value = "image", required = false) List<MultipartFile> images,
+                                                             @RequestPart(value = "deleteImageIds", required = false) List<UUID> imageIdsToDelete) throws IOException {
+        diaryService.updateDiaryById(user, diaryId, updateDiaryDto, images, imageIdsToDelete);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "감정일기가 정상적으로 수정되었습니다."), HttpStatus.OK);
     }
 
