@@ -87,21 +87,23 @@ public class DiaryService {
      * 감정일기 수정
      */
     @Transactional
-    public void updateDiaryById(User user, UUID diaryId, UpdateDiaryDto updateDiaryDto, List<MultipartFile> images) throws IOException {
+    public void updateDiaryById(User user, UUID diaryId,
+                                UpdateDiaryDto updateDiaryDto,
+                                List<MultipartFile> images,
+                                List<UUID> imageIdsToDelete) throws IOException {
         Diary newDiary = findDiary(user.getId(), diaryId);
+        // 이미지 삭제
+        if (imageIdsToDelete != null && !imageIdsToDelete.isEmpty()) {
+            imageService.deleteImagesByImageIds(imageIdsToDelete);
+        }
 
-        try {
-            if (images != null && !images.isEmpty()) {
-                imageService.deleteImages(newDiary);
-                imageService.uploadImages(user, newDiary, images);
-            }
-        } catch (MultipartException e) {
-            throw new MultipartException(e.getMessage());
+        // 이미지 업로드
+        if (images != null && !images.isEmpty()) {
+            imageService.uploadImages(user, newDiary, images);
         }
 
         newDiary.setTitle(updateDiaryDto.getTitle())
                 .setContent(updateDiaryDto.getContent());
-
         diaryRepository.save(newDiary);
     }
 
