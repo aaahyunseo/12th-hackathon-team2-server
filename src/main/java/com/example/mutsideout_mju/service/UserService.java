@@ -73,7 +73,7 @@ public class UserService {
     /**
      * 유저 전체 정보(이메일, 이름, 등급) 조회
      */
-    public UserInfoResponseDto getMyPage(User user){
+    public UserInfoResponseDto getMyPage(User user) {
         UserInfoResponseDto userInfoResponseDto = UserInfoResponseDto.of(user.getEmail(), user.getName(), user.getUserGrade());
         return userInfoResponseDto;
     }

@@ -51,7 +51,7 @@ public class S3Service {
     public List<String> uploadImage(List<MultipartFile> files) throws IOException {
         List<String> imageUrls = new ArrayList<>();
 
-        for(MultipartFile file : files){
+        for (MultipartFile file : files) {
             String dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
             String extension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
 
