@@ -137,7 +137,7 @@ public class PlannerService {
      */
     public void deletePlanner(User user, UUID plannerId) {
         Planner planner = findPlanner(user.getId(), plannerId);
-        if(planner.isCompleted()){
+        if (planner.isCompleted()) {
             throw new ForbiddenException(ErrorCode.INVALID_PLANNER_ACCESS, "완료된 플랜은 삭제할 수 없습니다.");
         }
         plannerRepository.delete(planner);

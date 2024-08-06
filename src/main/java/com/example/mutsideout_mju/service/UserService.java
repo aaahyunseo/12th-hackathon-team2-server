@@ -3,8 +3,7 @@ package com.example.mutsideout_mju.service;
 import com.example.mutsideout_mju.authentication.PasswordHashEncryption;
 import com.example.mutsideout_mju.dto.request.user.DeleteUserDto;
 import com.example.mutsideout_mju.dto.request.user.UpdateUserDto;
-import com.example.mutsideout_mju.dto.response.user.ProfileResponseData;
-import com.example.mutsideout_mju.dto.response.user.UserGradeResponseDto;
+import com.example.mutsideout_mju.dto.response.user.UserInfoResponseDto;
 import com.example.mutsideout_mju.entity.UserGrade;
 import com.example.mutsideout_mju.entity.User;
 import com.example.mutsideout_mju.exception.ConflictException;
@@ -27,21 +26,21 @@ public class UserService {
      * 설문조사 유효 응답갯수로 유저 등급 계산
      */
     @Transactional
-    public UserGradeResponseDto calculateUserGrade(User user) {
+    public UserInfoResponseDto calculateUserGrade(User user) {
         long count = userSurveyRepository.countValidSurveyResponse(user.getId());
         UserGrade userGrade = user.determineGrade(count);
 
         user.setUserGrade(userGrade);
         userRepository.save(user);
 
-        return UserGradeResponseDto.of(user.getName(), userGrade);
+        return UserInfoResponseDto.of(user.getName(), userGrade);
     }
 
     /**
      * 유저 등급 반환
      */
-    public UserGradeResponseDto getUserGrade(User user) {
-        return UserGradeResponseDto.from(user.getUserGrade());
+    public UserInfoResponseDto getUserGrade(User user) {
+        return UserInfoResponseDto.from(user.getUserGrade());
     }
 
     /**
@@ -74,9 +73,9 @@ public class UserService {
     /**
      * 유저 전체 정보(이메일, 이름, 등급) 조회
      */
-    public ProfileResponseData getMyPage(User user){
-        ProfileResponseData profileResponseData = ProfileResponseData.of(user.getEmail(), user.getName(), user.getUserGrade());
-        return profileResponseData;
+    public UserInfoResponseDto getMyPage(User user) {
+        UserInfoResponseDto userInfoResponseDto = UserInfoResponseDto.of(user.getEmail(), user.getName(), user.getUserGrade());
+        return userInfoResponseDto;
     }
 
     /**

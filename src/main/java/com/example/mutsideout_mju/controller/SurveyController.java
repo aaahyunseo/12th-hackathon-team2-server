@@ -4,7 +4,7 @@ import com.example.mutsideout_mju.authentication.AuthenticatedUser;
 import com.example.mutsideout_mju.dto.request.survey.SurveyResultListDto;
 import com.example.mutsideout_mju.dto.response.ResponseDto;
 import com.example.mutsideout_mju.dto.response.survey.SurveyQuestionListResponseDto;
-import com.example.mutsideout_mju.dto.response.user.UserGradeResponseDto;
+import com.example.mutsideout_mju.dto.response.user.UserInfoResponseDto;
 import com.example.mutsideout_mju.entity.User;
 import com.example.mutsideout_mju.service.SurveyService;
 import com.example.mutsideout_mju.service.UserService;
@@ -24,11 +24,11 @@ public class SurveyController {
 
     // 설문조사 응답
     @PostMapping
-    public ResponseEntity<ResponseDto<UserGradeResponseDto>> saveSurveyResults(@AuthenticatedUser User user,
-                                                                               @RequestBody @Valid SurveyResultListDto surveyResultListDto) {
+    public ResponseEntity<ResponseDto<UserInfoResponseDto>> saveSurveyResults(@AuthenticatedUser User user,
+                                                                              @RequestBody @Valid SurveyResultListDto surveyResultListDto) {
         surveyService.saveSurveyResults(user, surveyResultListDto);
-        UserGradeResponseDto userGradeResponseDto = userService.calculateUserGrade(user);
-        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "설문조사 저장 및 유저 등급 반환 완료", userGradeResponseDto), HttpStatus.OK);
+        UserInfoResponseDto userInfoResponseDto = userService.calculateUserGrade(user);
+        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "설문조사 저장 및 유저 등급 반환 완료", userInfoResponseDto), HttpStatus.OK);
     }
 
     // 설문조사 질문 전체 조회
