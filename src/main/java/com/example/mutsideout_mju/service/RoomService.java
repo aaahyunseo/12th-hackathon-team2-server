@@ -90,7 +90,6 @@ public class RoomService {
      */
     public void updateRoomById(User user, UUID roomId, UpdateRoomDto updateRoomDto) {
         Room updateRoom = findRoomByUserIdAndRoomId(user.getId(), roomId);
-        //업데이트 함수
         updateRoom.setTitle(updateRoomDto.getTitle())
                 .setLink(updateRoomDto.getLink())
                 .setContent(updateRoomDto.getContent());
