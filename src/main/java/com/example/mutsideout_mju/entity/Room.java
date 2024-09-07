@@ -37,11 +37,9 @@ public class Room extends BaseEntity {
         return this;
     }
     public Room(String title, String link, String content, User user){
-        Room.builder()
-                .title(title)
-                .link(link)
-                .content(content)
-                .user(user)
-                .build();
+        this.link = link;
+        this.title = title;
+        this.content = content;
+        this.user = user;
     }
 }
