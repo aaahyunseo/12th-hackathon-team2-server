@@ -70,30 +70,28 @@ public class AuthService {
      * accessToken, refreshToken 재발급
      */
     public TokenResponseDto refresh(String refreshToken) {
-        User user = validateRefreshToken(refreshToken);
+        RefreshToken storedRefreshToken = findExistingRefreshToken(refreshToken);
+        validateRefreshToken(storedRefreshToken);
+        User user = findExistingUserByRefreshToken(storedRefreshToken);
         return createToken(user);
     }
 
     /**
      * 유저 refreshToken 관리
      */
-    private User validateRefreshToken(String refreshToken) {
-        RefreshToken storedRefreshToken = refreshTokenRepository.findByToken(refreshToken);
-
-        // 저장된 refreshToken이 없는 경우
-        if (storedRefreshToken == null) {
-            throw new UnauthorizedException(ErrorCode.INVALID_REFRESH_TOKEN, "  저장된 RefreshToken이 null 입니다. ");
-        }
-
-        // 저장된 refreshToken이 만료된 경우
-        if (refreshTokenProvider.isTokenExpired(storedRefreshToken.getToken())) {
-            throw new UnauthorizedException(ErrorCode.INVALID_REFRESH_TOKEN, "토큰이 만료됐습니다.");
-        }
-
-        return userRepository.findById(storedRefreshToken.getUserId())
+    private User findExistingUserByRefreshToken(RefreshToken refreshToken) {
+        return userRepository.findById(refreshToken.getUserId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
+    private RefreshToken findExistingRefreshToken(String refreshToken) {
+        return refreshTokenRepository.findByToken(refreshToken).orElseThrow(() -> new NotFoundException(ErrorCode.INVALID_REFRESH_TOKEN));
+    }
 
+    private void validateRefreshToken(RefreshToken refreshToken) {
+        if (refreshTokenProvider.isTokenExpired(refreshToken.getToken())) {
+            throw new UnauthorizedException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+    }
     /**
      * accessToken 토큰 생성 및 refreshToken 저장
      */
