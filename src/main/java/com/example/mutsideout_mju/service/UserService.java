@@ -4,6 +4,7 @@ import com.example.mutsideout_mju.authentication.PasswordHashEncryption;
 import com.example.mutsideout_mju.dto.request.user.DeleteUserDto;
 import com.example.mutsideout_mju.dto.request.user.UpdateUserDto;
 import com.example.mutsideout_mju.dto.response.user.UserInfoResponseDto;
+import com.example.mutsideout_mju.entity.RefreshToken;
 import com.example.mutsideout_mju.entity.UserGrade;
 import com.example.mutsideout_mju.entity.User;
 import com.example.mutsideout_mju.exception.ConflictException;
@@ -98,5 +99,9 @@ public class UserService {
     }
     public User findExistingUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorCode.INVALID_EMAIL_OR_PASSWORD));
+    }
+    public User findExistingUserByRefreshToken(RefreshToken refreshToken) {
+        return userRepository.findById(refreshToken.getUserId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 }
