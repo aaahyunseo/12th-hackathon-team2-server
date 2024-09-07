@@ -9,6 +9,7 @@ import com.example.mutsideout_mju.dto.response.token.TokenResponseDto;
 import com.example.mutsideout_mju.exception.UnauthorizedException;
 import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.service.AuthService;
+import com.example.mutsideout_mju.service.CookieService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,7 +28,7 @@ import java.time.Duration;
 public class AuthController {
 
     private final AuthService authService;
-
+    private final CookieService cookieService;
     // 회원가입
     @PostMapping("/signup")
     public ResponseEntity<ResponseDto<Void>> signup(@RequestBody @Valid SignupDto signupDto, HttpServletResponse response) {
@@ -43,29 +44,6 @@ public class AuthController {
         setCookie(response, JwtEncoder.encode(tokenResponseDto.getAccessToken()));
         setCookieForRefreshToken(response, tokenResponseDto.getRefreshToken());
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "로그인 완료"), HttpStatus.OK);
-    }
-
-    private static void setCookie(HttpServletResponse response, String accessToken) {
-        ResponseCookie cookie = ResponseCookie.from(AuthenticationExtractor.TOKEN_COOKIE_NAME, accessToken)
-                .maxAge(Duration.ofMillis(1800000))
-                .path("/")
-                .httpOnly(true)
-                .sameSite("None").secure(true)
-                .build();
-
-        response.addHeader("set-cookie", cookie.toString());
-    }
-
-    private static void setCookieForRefreshToken(HttpServletResponse response, String refreshToken) {
-        ResponseCookie cookie_refresh = ResponseCookie.from("RefreshToken", refreshToken)
-                .maxAge(Duration.ofDays(14))
-                .path("/")
-                .httpOnly(true)
-                .sameSite("None")
-                .secure(true)
-                .build();
-
-        response.addHeader("set-cookie", cookie_refresh.toString());
     }
 
     // RefreshToken 발급
