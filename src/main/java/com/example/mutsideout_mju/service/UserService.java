@@ -7,7 +7,7 @@ import com.example.mutsideout_mju.dto.response.user.UserInfoResponseDto;
 import com.example.mutsideout_mju.entity.UserGrade;
 import com.example.mutsideout_mju.entity.User;
 import com.example.mutsideout_mju.exception.ConflictException;
-import com.example.mutsideout_mju.exception.ForbiddenException;
+import com.example.mutsideout_mju.exception.UnauthorizedException;
 import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.repository.UserRepository;
 import com.example.mutsideout_mju.repository.usersurvey.UserSurveyRepository;
@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
     private final UserRepository userRepository;
     private final UserSurveyRepository userSurveyRepository;
     private final PasswordHashEncryption passwordHashEncryption;
@@ -47,7 +48,7 @@ public class UserService {
      * 유저 탈퇴
      */
     public void deleteUser(User user, DeleteUserDto deleteUserDto) {
-        validatePassword(deleteUserDto.getPassword(), user.getPassword());
+        validateIsPasswordMatches(deleteUserDto.getPassword(), user.getPassword());
         userRepository.delete(user);
     }
 
@@ -56,10 +57,10 @@ public class UserService {
      */
     @Transactional
     public void updateUser(User user, UpdateUserDto updateUserDto) {
-        validatePassword(updateUserDto.getOriginPassword(), user.getPassword());
+        validateIsPasswordMatches(updateUserDto.getOriginPassword(), user.getPassword());
         if (updateUserDto.getNewName() != null && !updateUserDto.getNewName().isEmpty()) {
             //중복된 이름이 있을 경우
-            if (userRepository.findByName(updateUserDto.getNewName()).isPresent()) {
+            if (userRepository.existsByEmail(updateUserDto.getNewName())) {
                 throw new ConflictException(ErrorCode.DUPLICATED_NAME);
             }
             user.setName(updateUserDto.getNewName());
@@ -74,16 +75,24 @@ public class UserService {
      * 유저 전체 정보(이메일, 이름, 등급) 조회
      */
     public UserInfoResponseDto getMyPage(User user) {
-        UserInfoResponseDto userInfoResponseDto = UserInfoResponseDto.of(user.getEmail(), user.getName(), user.getUserGrade());
-        return userInfoResponseDto;
+        return UserInfoResponseDto.of(user.getEmail(), user.getName(), user.getUserGrade());
     }
 
-    /**
-     * 비밀번호 일치 여부 확인
-     */
-    public void validatePassword(String plainPassword, String hashedPassword) {
-        if (!passwordHashEncryption.matches(plainPassword, hashedPassword)) {
-            throw new ForbiddenException(ErrorCode.NO_ACCESS, "비밀번호 정보가 일치하지 않습니다.");
+    public void validateIsPasswordMatches(String requestedPassword, String userPassword) {
+        if (!passwordHashEncryption.matches(requestedPassword, userPassword)) {
+            throw new UnauthorizedException(ErrorCode.INVALID_EMAIL_OR_PASSWORD);
+        }
+    }
+
+    public void validateIsDuplicatedEmail(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new ConflictException(ErrorCode.DUPLICATED_EMAIL);
+        }
+    }
+
+    public void validateIsDuplicatedName(String name) {
+        if (userRepository.existsByName(name)) {
+            throw new ConflictException(ErrorCode.DUPLICATED_NAME);
         }
     }
 }
