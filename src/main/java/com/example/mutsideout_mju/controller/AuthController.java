@@ -33,7 +33,7 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<ResponseDto<Void>> signup(@RequestBody @Valid SignupDto signupDto, HttpServletResponse response) {
         TokenResponseDto tokenResponseDto = authService.signup(signupDto);
-        setCookie(response, JwtEncoder.encode(tokenResponseDto.getAccessToken()));
+        cookieService.setCookie(response, JwtEncoder.encode(tokenResponseDto.getAccessToken()));
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.CREATED, "회원가입 완료"), HttpStatus.CREATED);
     }
 
@@ -41,8 +41,8 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ResponseDto<Void>> login(@RequestBody @Valid LoginDto loginDto, HttpServletResponse response) {
         TokenResponseDto tokenResponseDto = authService.login(loginDto);
-        setCookie(response, JwtEncoder.encode(tokenResponseDto.getAccessToken()));
-        setCookieForRefreshToken(response, tokenResponseDto.getRefreshToken());
+        cookieService.setCookie(response, JwtEncoder.encode(tokenResponseDto.getAccessToken()));
+        cookieService.setCookieForRefreshToken(response, tokenResponseDto.getRefreshToken());
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "로그인 완료"), HttpStatus.OK);
     }
 
@@ -51,13 +51,9 @@ public class AuthController {
     public ResponseEntity<ResponseDto<Void>> refresh(HttpServletResponse response, HttpServletRequest request) {
         String refreshToken = getRefreshTokenFromCookie(request);
         TokenResponseDto tokenResponseDto;
-        try {
-            tokenResponseDto = authService.refresh(refreshToken);
-        } catch (UnauthorizedException e) {
-            return new ResponseEntity<>(ResponseDto.res(HttpStatus.UNAUTHORIZED, "Refresh token 만료 혹은 부적절"), HttpStatus.UNAUTHORIZED);
-        }
-        setCookie(response, JwtEncoder.encode(tokenResponseDto.getAccessToken()));
-        setCookieForRefreshToken(response, tokenResponseDto.getRefreshToken());
+        tokenResponseDto = authService.refresh(refreshToken);
+        cookieService.setCookie(response, JwtEncoder.encode(tokenResponseDto.getAccessToken()));
+        cookieService.setCookieForRefreshToken(response, tokenResponseDto.getRefreshToken());
 
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "Refresh token 재생성 완료"), HttpStatus.OK);
     }
