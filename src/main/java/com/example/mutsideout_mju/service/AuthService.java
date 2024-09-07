@@ -26,6 +26,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
     private final RefreshTokenProvider refreshTokenProvider;
+    private final UserService userService;
 
     /**
      * 회원가입
@@ -57,7 +58,7 @@ public class AuthService {
      */
     public TokenResponseDto login(LoginDto loginDto) {
         // 유저 검증
-        User user = findExistingUserByEmail(loginDto.getEmail());
+        User user = userService.findExistingUserByEmail(loginDto.getEmail());
 
         // 비밀번호 검증
         userService.validateIsPasswordMatches(loginDto.getPassword(), user.getPassword());
@@ -109,9 +110,5 @@ public class AuthService {
         refreshTokenRepository.save(refreshToken);
 
         return new TokenResponseDto(accessToken, refreshTokenValue);
-    }
-
-    private User findExistingUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorCode.INVALID_EMAIL_OR_PASSWORD));
     }
 }
