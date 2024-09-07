@@ -35,10 +35,8 @@ public class Diary extends BaseEntity {
     }
 
     public Diary(User user, String title, String content){
-        Diary.builder()
-                .user(user)
-                .title(title)
-                .content(content)
-                .build();
+        this.user = user;
+        this.title = title;
+        this.content = content;
     }
 }
