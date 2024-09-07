@@ -68,11 +68,6 @@ public class RoomService {
      */
     public RoomResponseData getRoomById(UUID roomId) {
         Room room = findExistingRoom(roomId);
-        //현재 시각으로 부터 방 생성 시간이 24시간 이후이면 false(비활성화)로 방 삭제
-        if (!room.getCreatedAt().isAfter(LocalDateTime.now().minusHours(24))) {
-            roomRepository.deleteById(roomId);
-            throw new NotFoundException(ErrorCode.ROOM_NOT_FOUND);
-        }
         return RoomResponseData.from(room);
     }
 
