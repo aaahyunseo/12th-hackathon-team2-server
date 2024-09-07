@@ -17,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -36,15 +35,14 @@ public class DiaryService {
      */
     public DiaryListResponseData getDiaryList(User user, PaginationDto paginationDto) {
 
+        int page = paginationDto.getPage();
+        Sort sort = Sort.by(Sort.Order.desc("createdAt"));
+
         //요청받은 페이지 번호, 페이지 크기, 작성순으로 정렬
-        Pageable pageable = PageRequest.of(paginationDto.getPage(), paginationDto.getPAGE_SIZE(), Sort.by(Sort.Order.desc("createdAt")));
+        Pageable pageable = PageRequest.of(page, paginationDto.getPageSize(), sort);
 
         //특정 유저의 해당 페이지 데이터를 모두 가져옴
         Page<Diary> diaryPage = diaryRepository.findByUserId(user.getId(), pageable);
-
-        if (diaryPage.getTotalPages() <= paginationDto.getPage() && paginationDto.getPage() != 0) {
-            throw new NotFoundException(ErrorCode.NOT_FOUND_PAGE);
-        }
 
         return DiaryListResponseData.from(diaryPage);
     }
@@ -67,20 +65,9 @@ public class DiaryService {
      */
     @Transactional
     public void writeDiary(User user, WriteDiaryDto writeDiaryDto, List<MultipartFile> images) throws IOException {
-        Diary diary = Diary.builder()
-                .user(user)
-                .title(writeDiaryDto.getTitle())
-                .content(writeDiaryDto.getContent())
-                .build();
+        Diary diary = new Diary(user,writeDiaryDto.getTitle(),writeDiaryDto.getContent());
         diary = diaryRepository.save(diary);
-
-        try {
-            if (images != null && !images.isEmpty()) {
-                imageService.uploadImages(user, diary, images);
-            }
-        } catch (MultipartException e) {
-            throw new MultipartException(e.getMessage());
-        }
+        uploadImages(diary, images);
     }
 
     /**
@@ -97,10 +84,7 @@ public class DiaryService {
             imageService.deleteImagesByImageIds(imageIdsToDelete);
         }
 
-        // 이미지 업로드
-        if (images != null && !images.isEmpty()) {
-            imageService.uploadImages(user, newDiary, images);
-        }
+        uploadImages(newDiary, images);
 
         newDiary.setTitle(updateDiaryDto.getTitle())
                 .setContent(updateDiaryDto.getContent());
@@ -115,5 +99,15 @@ public class DiaryService {
         Diary diary = findDiary(user.getId(), diaryId);
         imageService.deleteImages(diary);
         diaryRepository.delete(diary);
+    }
+
+
+    /**
+     * 감정일기 이미지 파일 업로드
+     */
+    public void uploadImages(Diary diary, List<MultipartFile> images) throws IOException {
+        if (images != null && !images.isEmpty()) {
+            imageService.uploadImages(diary.getUser(), diary, images);
+        }
     }
 }
