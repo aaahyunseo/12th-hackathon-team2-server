@@ -72,23 +72,11 @@ public class AuthService {
      * accessToken, refreshToken 재발급
      */
     public TokenResponseDto refresh(String refreshToken) {
-        RefreshToken storedRefreshToken = findExistingRefreshToken(refreshToken);
+        RefreshToken storedRefreshToken = cookieService.findExistingRefreshToken(refreshToken);
         cookieService.validateRefreshToken(storedRefreshToken);
-        User user = findExistingUserByRefreshToken(storedRefreshToken);
+        User user = userService.findExistingUserByRefreshToken(storedRefreshToken);
         return createToken(user);
     }
-
-    /**
-     * 유저 refreshToken 관리
-     */
-    private User findExistingUserByRefreshToken(RefreshToken refreshToken) {
-        return userRepository.findById(refreshToken.getUserId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
-    }
-    private RefreshToken findExistingRefreshToken(String refreshToken) {
-        return refreshTokenRepository.findByToken(refreshToken).orElseThrow(() -> new NotFoundException(ErrorCode.INVALID_REFRESH_TOKEN));
-    }
-
     /**
      * accessToken 토큰 생성 및 refreshToken 저장
      */
