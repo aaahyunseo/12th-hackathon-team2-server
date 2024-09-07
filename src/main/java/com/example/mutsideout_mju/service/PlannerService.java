@@ -59,13 +59,9 @@ public class PlannerService {
     /**
      * 플래너 완료
      */
-    public void completePlannerById(User user, UUID plannerId, CompletePlannerRequestDto requestDto) {
+    public void completePlannerById(User user, UUID plannerId) {
         Planner planner = findPlanner(user.getId(), plannerId);
-        if (!requestDto.getIsCompleted() || planner.isCompleted()) {
-            throw new UnauthorizedException(ErrorCode.INVALID_PLANNER_ACCESS);
-        }
-
-        planner.setCompleted(requestDto.getIsCompleted());
+        planner.complete();
         plannerRepository.save(planner);
     }
 

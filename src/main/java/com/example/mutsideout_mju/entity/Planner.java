@@ -57,4 +57,8 @@ public class Planner extends BaseEntity {
             throw new ForbiddenException(ErrorCode.INVALID_PLANNER_ACCESS, "완료된 플랜은 수정할 수 없습니다.");
         }
     }
+    public void complete(){
+        validateComplete();
+        this.isCompleted = true;
+    }
 }
