@@ -59,12 +59,11 @@ public class PlannerController {
     }
 
     // 플래너 완료
-    @PutMapping("/{plannerId}")
+    @PatchMapping("{plannerId}/complete")
     public ResponseEntity<ResponseDto<Void>> completePlannerById(
             @AuthenticatedUser User user,
-            @RequestBody @Valid CompletePlannerRequestDto requestDto,
             @PathVariable UUID plannerId) {
-        plannerService.completePlannerById(user, plannerId, requestDto);
+        plannerService.completePlannerById(user, plannerId);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "플래너 완료 상태로 변경"), HttpStatus.OK);
     }
 

@@ -43,11 +43,7 @@ public class PlannerService {
      * 플래너 생성
      */
     public void createPlanner(User user, PlannerDto plannerDto) {
-        Planner planner = Planner.builder()
-                .content(plannerDto.getContent())
-                .isCompleted(false)
-                .user(user)
-                .build();
+        Planner planner = new Planner(user, plannerDto.getContent());
         this.plannerRepository.save(planner);
     }
 
@@ -56,24 +52,16 @@ public class PlannerService {
      */
     public void updatePlanner(User user, UUID plannerId, PlannerDto plannerDto) {
         Planner planner = findPlanner(user.getId(), plannerId);
-        if (planner.isCompleted()) {
-            throw new ForbiddenException(ErrorCode.INVALID_PLANNER_ACCESS, "완료된 플랜은 수정할 수 없습니다.");
-        }
-
-        planner.setContent(plannerDto.getContent());
+        planner.update(plannerDto.getContent());
         plannerRepository.save(planner);
     }
 
     /**
      * 플래너 완료
      */
-    public void completePlannerById(User user, UUID plannerId, CompletePlannerRequestDto requestDto) {
+    public void completePlannerById(User user, UUID plannerId) {
         Planner planner = findPlanner(user.getId(), plannerId);
-        if (!requestDto.getIsCompleted() || planner.isCompleted()) {
-            throw new UnauthorizedException(ErrorCode.INVALID_PLANNER_ACCESS);
-        }
-
-        planner.setCompleted(requestDto.getIsCompleted());
+        planner.complete();
         plannerRepository.save(planner);
     }
 

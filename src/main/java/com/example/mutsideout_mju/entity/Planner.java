@@ -1,5 +1,7 @@
 package com.example.mutsideout_mju.entity;
 
+import com.example.mutsideout_mju.exception.ForbiddenException;
+import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,5 +41,24 @@ public class Planner extends BaseEntity {
         } else {
             return StatsGrade.LEVEL1;
         }
+    }
+    public Planner (User user, String content){
+        this.user = user;
+        this.content = content;
+        this.isCompleted = false;
+    }
+    public void update(String content){
+        validateComplete();
+        this.content = content;
+    }
+
+    public void validateComplete(){
+        if(isCompleted){
+            throw new ForbiddenException(ErrorCode.INVALID_PLANNER_ACCESS, "완료된 플랜은 수정할 수 없습니다.");
+        }
+    }
+    public void complete(){
+        validateComplete();
+        this.isCompleted = true;
     }
 }
