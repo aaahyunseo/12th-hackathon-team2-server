@@ -27,6 +27,7 @@ public class AuthService {
     private final UserService userService;
     private final RefreshTokenProvider refreshTokenProvider;
     private final UserService userService;
+    private final CookieService cookieService;
 
     /**
      * 회원가입
@@ -72,7 +73,7 @@ public class AuthService {
      */
     public TokenResponseDto refresh(String refreshToken) {
         RefreshToken storedRefreshToken = findExistingRefreshToken(refreshToken);
-        validateRefreshToken(storedRefreshToken);
+        cookieService.validateRefreshToken(storedRefreshToken);
         User user = findExistingUserByRefreshToken(storedRefreshToken);
         return createToken(user);
     }
@@ -88,11 +89,6 @@ public class AuthService {
         return refreshTokenRepository.findByToken(refreshToken).orElseThrow(() -> new NotFoundException(ErrorCode.INVALID_REFRESH_TOKEN));
     }
 
-    private void validateRefreshToken(RefreshToken refreshToken) {
-        if (refreshTokenProvider.isTokenExpired(refreshToken.getToken())) {
-            throw new UnauthorizedException(ErrorCode.INVALID_REFRESH_TOKEN);
-        }
-    }
     /**
      * accessToken 토큰 생성 및 refreshToken 저장
      */
