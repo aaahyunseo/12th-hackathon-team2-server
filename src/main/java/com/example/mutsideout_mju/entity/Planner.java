@@ -40,4 +40,9 @@ public class Planner extends BaseEntity {
             return StatsGrade.LEVEL1;
         }
     }
+    public Planner (User user, String content){
+        this.user = user;
+        this.content = content;
+        this.isCompleted = false;
+    }
 }

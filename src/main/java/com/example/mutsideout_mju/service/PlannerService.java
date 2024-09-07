@@ -43,11 +43,7 @@ public class PlannerService {
      * 플래너 생성
      */
     public void createPlanner(User user, PlannerDto plannerDto) {
-        Planner planner = Planner.builder()
-                .content(plannerDto.getContent())
-                .isCompleted(false)
-                .user(user)
-                .build();
+        Planner planner = new Planner(user, plannerDto.getContent());
         this.plannerRepository.save(planner);
     }
 
