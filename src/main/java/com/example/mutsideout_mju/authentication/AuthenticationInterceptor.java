@@ -6,7 +6,6 @@ import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -21,12 +20,12 @@ import java.util.UUID;
 public class AuthenticationInterceptor implements HandlerInterceptor {
     private final UserRepository userRepository;
     private final AuthenticationContext authenticationContext;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final AccessTokenProvider accessTokenProvider;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws UnsupportedEncodingException {
         String accessToken = AuthenticationExtractor.extract(request);
-        UUID userId = UUID.fromString(jwtTokenProvider.getPayload(accessToken));
+        UUID userId = UUID.fromString(accessTokenProvider.getPayload(accessToken));
         User user = findExistingUser(userId);
         authenticationContext.setPrincipal(user);
         return true;

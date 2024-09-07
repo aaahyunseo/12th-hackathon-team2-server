@@ -10,16 +10,15 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.Date;
 @Slf4j
 @Component
-public class JwtTokenProvider {
+public class AccessTokenProvider {
     private final SecretKey key; // 시크릿 키
     private final long validityInMilliseconds; // 유효 시간
 
-    public JwtTokenProvider(@Value("${security.jwt.token.secret-key}") final String secretKey,
-                            @Value("${security.jwt.token.expire-length}") final long validityInMilliseconds) {
+    public AccessTokenProvider(@Value("${security.jwt.token.secret-key}") final String secretKey,
+                               @Value("${security.jwt.token.expire-length}") final long validityInMilliseconds) {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         this.validityInMilliseconds = validityInMilliseconds;
     }
