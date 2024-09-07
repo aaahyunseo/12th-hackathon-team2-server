@@ -46,14 +46,15 @@ public class RoomService {
      * 집중 세션 방 전체 목록 조회
      */
     public RoomListResponseData getRoomList(PaginationDto paginationDto) {
+
+        int page = paginationDto.getPage();
+        Sort sort = Sort.by(Sort.Order.desc("createdAt"));
+
         // 요청받은 페이지 번호, 페이지 크기, 작성순으로 정렬
-        Pageable pageable = PageRequest.of(paginationDto.getPage(), paginationDto.getPAGE_SIZE(), Sort.by(Sort.Order.desc("createdAt")));
+        Pageable pageable = PageRequest.of(page, paginationDto.getPageSize(), sort);
 
         // 해당 페이지 데이터를 모두 가져옴
         Page<Room> roomPage = roomRepository.findAll(pageable);
-        if (roomPage.getTotalPages() <= paginationDto.getPage() && paginationDto.getPage() != 0) {
-            throw new NotFoundException(ErrorCode.NOT_FOUND_PAGE);
-        }
 
         List<RoomResponseDto> roomResponseList = roomPage.getContent().stream()
                 .map(room -> RoomResponseDto.fromRoom(room, s3Service.getRoomImageLink(room.getLink())))
@@ -80,12 +81,7 @@ public class RoomService {
      * 집중 세션 방 생성
      */
     public void createRoom(User user, CreateRoomDto createRoomDto) {
-        Room room = Room.builder()
-                .title(createRoomDto.getTitle())
-                .link(createRoomDto.getLink())
-                .content(createRoomDto.getContent())
-                .user(user)
-                .build();
+        Room room = new Room(createRoomDto.getTitle(), createRoomDto.getLink(), createRoomDto.getContent(), user);
         roomRepository.save(room);
     }
 
@@ -94,6 +90,7 @@ public class RoomService {
      */
     public void updateRoomById(User user, UUID roomId, UpdateRoomDto updateRoomDto) {
         Room updateRoom = findRoomByUserIdAndRoomId(user.getId(), roomId);
+        //업데이트 함수
         updateRoom.setTitle(updateRoomDto.getTitle())
                 .setLink(updateRoomDto.getLink())
                 .setContent(updateRoomDto.getContent());
