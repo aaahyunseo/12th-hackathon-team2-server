@@ -2,6 +2,7 @@ package com.example.mutsideout_mju.service;
 
 import com.example.mutsideout_mju.authentication.JwtTokenProvider;
 import com.example.mutsideout_mju.authentication.PasswordHashEncryption;
+import com.example.mutsideout_mju.authentication.RefreshTokenProvider;
 import com.example.mutsideout_mju.dto.request.auth.LoginDto;
 import com.example.mutsideout_mju.dto.request.auth.SignupDto;
 import com.example.mutsideout_mju.dto.response.token.TokenResponseDto;
@@ -24,6 +25,7 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
+    private final RefreshTokenProvider refreshTokenProvider;
 
     /**
      * 회원가입
@@ -84,7 +86,7 @@ public class AuthService {
         }
 
         // 저장된 refreshToken이 만료된 경우
-        if (jwtTokenProvider.isTokenExpired(storedRefreshToken.getToken())) {
+        if (refreshTokenProvider.isTokenExpired(storedRefreshToken.getToken())) {
             throw new UnauthorizedException(ErrorCode.INVALID_REFRESH_TOKEN, "토큰이 만료됐습니다.");
         }
 
@@ -99,7 +101,7 @@ public class AuthService {
         String payload = String.valueOf(user.getId());
         String accessToken = jwtTokenProvider.createToken(payload);
         // refreshToken 생성.
-        String refreshTokenValue = jwtTokenProvider.createRefreshToken();
+        String refreshTokenValue = refreshTokenProvider.createRefreshToken();
 
         RefreshToken refreshToken = refreshTokenRepository.findByUserId(user.getId())
                 .orElse(new RefreshToken(user.getId(), refreshTokenValue));
