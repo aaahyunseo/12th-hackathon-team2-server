@@ -49,12 +49,24 @@ public class S3Service {
     }
 
     public List<String> uploadImage(List<MultipartFile> files) throws IOException {
+
         List<String> imageUrls = new ArrayList<>();
 
         for (MultipartFile file : files) {
-            String dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
-            String extension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+            String filename = file.getOriginalFilename();
+            // 파일명이 null인 경우 예외 처리
+            if (filename == null) {
+                throw new IllegalStateException("파일명이 null입니다.");
+            }
 
+            int dotIndex = filename.lastIndexOf(".");
+            // 확장자가 없는 경우 예외 처리
+            if (dotIndex == -1) {
+                throw new IllegalArgumentException("파일에 적절한 확장자가 없습니다: " + filename);
+            }
+            String extension = filename.substring(dotIndex);
+
+            String dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
             String key = "diaries/" + UUID.randomUUID().toString() + "-" + dateTime + extension;
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(file.getSize());
