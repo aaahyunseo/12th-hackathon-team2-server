@@ -1,15 +1,13 @@
 package com.example.mutsideout_mju.service;
 
-import com.example.mutsideout_mju.authentication.JwtTokenProvider;
+import com.example.mutsideout_mju.authentication.AccessTokenProvider;
 import com.example.mutsideout_mju.authentication.PasswordHashEncryption;
+import com.example.mutsideout_mju.authentication.RefreshTokenProvider;
 import com.example.mutsideout_mju.dto.request.auth.LoginDto;
 import com.example.mutsideout_mju.dto.request.auth.SignupDto;
 import com.example.mutsideout_mju.dto.response.token.TokenResponseDto;
 import com.example.mutsideout_mju.entity.RefreshToken;
 import com.example.mutsideout_mju.entity.User;
-import com.example.mutsideout_mju.exception.NotFoundException;
-import com.example.mutsideout_mju.exception.UnauthorizedException;
-import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.repository.RefreshTokenRepository;
 import com.example.mutsideout_mju.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +20,10 @@ public class AuthService {
     private final PasswordHashEncryption passwordHashEncryption;
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final AccessTokenProvider accessTokenProvider;
     private final UserService userService;
+    private final RefreshTokenProvider refreshTokenProvider;
+    private final CookieService cookieService;
 
     /**
      * 회원가입
@@ -55,7 +55,7 @@ public class AuthService {
      */
     public TokenResponseDto login(LoginDto loginDto) {
         // 유저 검증
-        User user = findExistingUserByEmail(loginDto.getEmail());
+        User user = userService.findExistingUserByEmail(loginDto.getEmail());
 
         // 비밀번호 검증
         userService.validateIsPasswordMatches(loginDto.getPassword(), user.getPassword());
@@ -68,38 +68,19 @@ public class AuthService {
      * accessToken, refreshToken 재발급
      */
     public TokenResponseDto refresh(String refreshToken) {
-        User user = validateRefreshToken(refreshToken);
+        RefreshToken storedRefreshToken = cookieService.findExistingRefreshToken(refreshToken);
+        cookieService.validateRefreshToken(storedRefreshToken);
+        User user = userService.findExistingUserByRefreshToken(storedRefreshToken);
         return createToken(user);
     }
-
-    /**
-     * 유저 refreshToken 관리
-     */
-    private User validateRefreshToken(String refreshToken) {
-        RefreshToken storedRefreshToken = refreshTokenRepository.findByToken(refreshToken);
-
-        // 저장된 refreshToken이 없는 경우
-        if (storedRefreshToken == null) {
-            throw new UnauthorizedException(ErrorCode.INVALID_REFRESH_TOKEN, "  저장된 RefreshToken이 null 입니다. ");
-        }
-
-        // 저장된 refreshToken이 만료된 경우
-        if (jwtTokenProvider.isTokenExpired(storedRefreshToken.getToken())) {
-            throw new UnauthorizedException(ErrorCode.INVALID_REFRESH_TOKEN, "토큰이 만료됐습니다.");
-        }
-
-        return userRepository.findById(storedRefreshToken.getUserId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
-    }
-
     /**
      * accessToken 토큰 생성 및 refreshToken 저장
      */
     private TokenResponseDto createToken(User user) {
         String payload = String.valueOf(user.getId());
-        String accessToken = jwtTokenProvider.createToken(payload);
+        String accessToken = accessTokenProvider.createToken(payload);
         // refreshToken 생성.
-        String refreshTokenValue = jwtTokenProvider.createRefreshToken();
+        String refreshTokenValue = refreshTokenProvider.createRefreshToken();
 
         RefreshToken refreshToken = refreshTokenRepository.findByUserId(user.getId())
                 .orElse(new RefreshToken(user.getId(), refreshTokenValue));
@@ -109,9 +90,5 @@ public class AuthService {
         refreshTokenRepository.save(refreshToken);
 
         return new TokenResponseDto(accessToken, refreshTokenValue);
-    }
-
-    private User findExistingUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorCode.INVALID_EMAIL_OR_PASSWORD));
     }
 }

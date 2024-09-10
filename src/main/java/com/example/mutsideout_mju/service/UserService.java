@@ -4,10 +4,12 @@ import com.example.mutsideout_mju.authentication.PasswordHashEncryption;
 import com.example.mutsideout_mju.dto.request.user.DeleteUserDto;
 import com.example.mutsideout_mju.dto.request.user.UpdateUserDto;
 import com.example.mutsideout_mju.dto.response.user.UserInfoResponseDto;
+import com.example.mutsideout_mju.entity.RefreshToken;
 import com.example.mutsideout_mju.entity.UserGrade;
 import com.example.mutsideout_mju.entity.User;
 import com.example.mutsideout_mju.exception.ConflictException;
 import com.example.mutsideout_mju.exception.UnauthorizedException;
+import com.example.mutsideout_mju.exception.NotFoundException;
 import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.repository.UserRepository;
 import com.example.mutsideout_mju.repository.usersurvey.UserSurveyRepository;
@@ -94,5 +96,12 @@ public class UserService {
         if (userRepository.existsByName(name)) {
             throw new ConflictException(ErrorCode.DUPLICATED_NAME);
         }
+    }
+    public User findExistingUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorCode.INVALID_EMAIL_OR_PASSWORD));
+    }
+    public User findExistingUserByRefreshToken(RefreshToken refreshToken) {
+        return userRepository.findById(refreshToken.getUserId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 }
