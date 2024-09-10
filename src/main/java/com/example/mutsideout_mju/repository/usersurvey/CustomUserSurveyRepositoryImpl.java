@@ -2,6 +2,7 @@ package com.example.mutsideout_mju.repository.usersurvey;
 
 
 import com.example.mutsideout_mju.entity.SurveyOption;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 
@@ -19,13 +20,15 @@ public class CustomUserSurveyRepositoryImpl implements CustomUserSurveyRepositor
 
     @Override
     public long countValidSurveyResponse(UUID userId) {
-        return queryFactory
-                .selectFrom(userSurvey)
+        JPAQuery<Long> countQuery = queryFactory
+                .select(userSurvey.count())
+                .from(userSurvey)
                 .where(userSurvey.user.id.eq(userId),
                         userSurvey.survey.number.between(1, 3)
                                 .and(userSurvey.surveyOption.in(SurveyOption.NORMAL, SurveyOption.YES))
                                 .or(userSurvey.survey.number.between(4, 6)
-                                        .and(userSurvey.surveyOption.eq(SurveyOption.YES))))
-                .fetchCount();
+                                        .and(userSurvey.surveyOption.eq(SurveyOption.YES))));
+
+        return countQuery.fetchOne();
     }
 }

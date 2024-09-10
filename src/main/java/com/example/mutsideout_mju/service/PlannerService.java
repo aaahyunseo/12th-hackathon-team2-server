@@ -1,13 +1,11 @@
 package com.example.mutsideout_mju.service;
 
-import com.example.mutsideout_mju.dto.request.planner.CompletePlannerRequestDto;
 import com.example.mutsideout_mju.dto.request.planner.PlannerDto;
 import com.example.mutsideout_mju.dto.response.planner.*;
 import com.example.mutsideout_mju.entity.Planner;
 import com.example.mutsideout_mju.entity.User;
 import com.example.mutsideout_mju.exception.ForbiddenException;
 import com.example.mutsideout_mju.exception.NotFoundException;
-import com.example.mutsideout_mju.exception.UnauthorizedException;
 import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.repository.planner.PlannerRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +32,7 @@ public class PlannerService {
                 .filter(planner -> !planner.isCompleted())
                 .sorted(Comparator.comparing(Planner::getCreatedAt).reversed())
                 .map(PlannerResponseData::fromPlanner)
-                .collect(Collectors.toList());
+                .toList();
 
         return new PlannerListResponseData(plannerResponseDataList);
     }
@@ -83,7 +81,7 @@ public class PlannerService {
                     List<CompletedPlannerResponseForClient> sortedPlanners = entry.getValue().stream()
                             .map(CompletedPlannerResponse::toClientResponse)
                             .sorted(Comparator.comparing(CompletedPlannerResponseForClient::getModifiedDate).reversed())
-                            .collect(Collectors.toList());
+                            .toList();
                     sortedGroupedPlanners.put(entry.getKey(), sortedPlanners);
                 });
 
@@ -97,7 +95,7 @@ public class PlannerService {
         List<Planner> completedPlanners = plannerRepository.findByIsCompletedAndUser(true, user);
         List<CompletedPlannerResponse> completedPlannerResponses = completedPlanners.stream()
                 .map(CompletedPlannerResponse::fromPlanner)
-                .collect(Collectors.toList());
+                .toList();
 
         return new CompletedPlannerListResponseData(completedPlannerResponses);
     }

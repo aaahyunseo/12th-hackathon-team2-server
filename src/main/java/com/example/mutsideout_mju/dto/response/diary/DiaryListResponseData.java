@@ -7,7 +7,6 @@ import lombok.Getter;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -19,8 +18,8 @@ public class DiaryListResponseData {
         return DiaryListResponseData.builder()
                 .diaryList(page.stream()
                         //DiaryDto 형식으로 변환
-                        .map(diary -> DiaryResponseDto.fromDiary(diary))
-                        .collect(Collectors.toList()))
+                        .map(DiaryResponseDto::fromDiary)
+                        .toList())
                 .pagination(PaginationData.paginationData(page))
                 .build();
     }

@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -58,7 +57,7 @@ public class RoomService {
 
         List<RoomResponseDto> roomResponseList = roomPage.getContent().stream()
                 .map(room -> RoomResponseDto.fromRoom(room, s3Service.getRoomImageLink(room.getLink())))
-                .collect(Collectors.toList());
+                .toList();
 
         PaginationData pagination = PaginationData.paginationData(roomPage);
         return new RoomListResponseData(roomResponseList, pagination);

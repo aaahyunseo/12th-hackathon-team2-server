@@ -3,9 +3,6 @@ package com.example.mutsideout_mju.dto.response.planner;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Getter

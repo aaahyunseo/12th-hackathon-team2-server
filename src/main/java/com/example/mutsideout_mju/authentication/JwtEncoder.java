@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 @AllArgsConstructor
 public class JwtEncoder {
+
     public static final String TOKEN_TYPE = "Bearer ";
 
     /**
@@ -22,7 +23,7 @@ public class JwtEncoder {
      */
     public static String encode(String token) {
         String cookieValue = TOKEN_TYPE + token;
-        return URLEncoder.encode(cookieValue, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        return URLEncoder.encode(cookieValue, StandardCharsets.UTF_8).replace("+", "%20");
     }
 
     /**
