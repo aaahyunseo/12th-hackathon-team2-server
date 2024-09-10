@@ -11,15 +11,13 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-
-
 @Slf4j
 @Component
 public class AccessTokenProvider {
     private final SecretKey key; // 시크릿 키
     private final long validityInMilliseconds; // 유효 시간
 
-    public AccessTokenProvider(@Value("${security.jwt.token.secret-access-key}") final String secretKey,
+    public AccessTokenProvider(@Value("${security.jwt.token.secret-key}") final String secretKey,
                                @Value("${security.jwt.token.expire-length}") final long validityInMilliseconds) {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         this.validityInMilliseconds = validityInMilliseconds;
@@ -41,12 +39,13 @@ public class AccessTokenProvider {
     // 정보 추출
     public String getPayload(final String token) {
         try {
-            return Jwts.parserBuilder()
+            String payload = Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token)
                     .getBody()
                     .getSubject();
+            return payload;
         } catch (JwtException e) {
             throw new UnauthorizedException(ErrorCode.INVALID_TOKEN, e.getMessage());
         }
