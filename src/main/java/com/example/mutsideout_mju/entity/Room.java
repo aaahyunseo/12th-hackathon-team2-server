@@ -1,7 +1,6 @@
 package com.example.mutsideout_mju.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +8,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "rooms")
 public class Room extends BaseEntity {
@@ -37,5 +35,11 @@ public class Room extends BaseEntity {
     public Room setContent(String content) {
         this.content = content;
         return this;
+    }
+    public Room(String title, String link, String content, User user){
+        this.link = link;
+        this.title = title;
+        this.content = content;
+        this.user = user;
     }
 }
