@@ -12,12 +12,12 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
+
 @Slf4j
 @Component
 public class AccessTokenProvider {
-
-    private final SecretKey key; // AccessToken secret 키
-    private final long validityInMilliseconds; // AccessToken 유효 시간
+    private final SecretKey key; // 시크릿 키
+    private final long validityInMilliseconds; // 유효 시간
 
     public AccessTokenProvider(@Value("${security.jwt.token.secret-access-key}") final String secretKey,
                                @Value("${security.jwt.token.expire-length}") final long validityInMilliseconds) {
@@ -34,7 +34,7 @@ public class AccessTokenProvider {
                 .setSubject(payload)
                 .setIssuedAt(now)
                 .setExpiration(expiration)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
     }
 
