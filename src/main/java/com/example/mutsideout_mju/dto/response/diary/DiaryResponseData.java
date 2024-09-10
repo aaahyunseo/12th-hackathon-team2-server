@@ -22,8 +22,8 @@ public class DiaryResponseData {
 
     public static DiaryResponseData from(Diary diary) {
         List<ImageData> images = diary.getImageFiles().stream()
-                .map(imageFile -> new ImageData(imageFile.getId(),imageFile.getImageUrl()))
-                .collect(Collectors.toList());
+                .map(imageFile -> new ImageData(imageFile.getId(), imageFile.getImageUrl()))
+                .toList();
 
         return DiaryResponseData.builder()
                 .id(diary.getId())

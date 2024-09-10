@@ -15,11 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class SurveyService {
+
     private final SurveyRepository surveyRepository;
     private final UserSurveyRepository userSurveyRepository;
 
@@ -28,9 +28,10 @@ public class SurveyService {
      */
     public SurveyQuestionListResponseDto getAllSurveyQuestions() {
         List<SurveyQuestionData> surveyQuestionDataList = surveyRepository.findAll().stream()
-                .map(survey -> SurveyQuestionData.from(survey))
+                .map(SurveyQuestionData::from)
                 .sorted(Comparator.comparing(SurveyQuestionData::getNumber))
-                .collect(Collectors.toList());
+                .toList();
+
         return SurveyQuestionListResponseDto.wrap(surveyQuestionDataList);
     }
 
@@ -39,6 +40,7 @@ public class SurveyService {
      */
     @Transactional
     public void saveSurveyResults(User user, SurveyResultListDto surveyResultListDto) {
+
         // 설문에 이미 응답했는지 검증
         if (userSurveyRepository.existsByUserId(user.getId())) {
             throw new ConflictException(ErrorCode.SURVEY_ALREADY_PARTICIPATED);
@@ -47,7 +49,7 @@ public class SurveyService {
         // 설문 ID들 추출
         List<UUID> surveyIds = surveyResultListDto.getSurveyResultList().stream()
                 .map(result -> UUID.fromString(result.getSurveyId()))
-                .collect(Collectors.toList());
+                .toList();
 
         // 해당 사용자가 제출한 설문 중복 검사
         List<UserSurvey> existingSurveys = userSurveyRepository.findByUserIdAndSurveyIdIn(user.getId(), surveyIds);
@@ -66,7 +68,7 @@ public class SurveyService {
                             .surveyOption(surveyResult.getOption())
                             .build();
                 })
-                .collect(Collectors.toList());
+                .toList();
         userSurveyRepository.saveAll(userSurveys);
     }
 
