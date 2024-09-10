@@ -6,7 +6,6 @@ import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

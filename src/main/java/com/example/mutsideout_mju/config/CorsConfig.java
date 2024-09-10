@@ -4,18 +4,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
-    private final long MAX_AGE_SECS = 3600L;
+    private static final long MAX_AGE_SECS = 3600L;
     @Value("${client.host}")
     private List<String> clientHosts;
     private final List<String> allowedMethods = List.of(

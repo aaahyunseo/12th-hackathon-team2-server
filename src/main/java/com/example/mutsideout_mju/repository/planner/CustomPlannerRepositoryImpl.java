@@ -3,8 +3,6 @@ package com.example.mutsideout_mju.repository.planner;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import org.springframework.stereotype.Repository;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +11,6 @@ import java.util.stream.Collectors;
 
 import static com.example.mutsideout_mju.entity.QPlanner.planner;
 
-@Repository
 public class CustomPlannerRepositoryImpl implements CustomPlannerRepository {
 
     private final JPAQueryFactory queryFactory;

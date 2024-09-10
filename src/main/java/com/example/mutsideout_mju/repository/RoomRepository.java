@@ -1,6 +1,5 @@
 package com.example.mutsideout_mju.repository;
 
-import com.example.mutsideout_mju.entity.Planner;
 import com.example.mutsideout_mju.entity.Room;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
