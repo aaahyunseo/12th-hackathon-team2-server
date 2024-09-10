@@ -8,6 +8,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Date;
@@ -19,7 +20,7 @@ public class RefreshTokenProvider {
     private final long validityInMilliseconds; // 유효 시간
 
     public RefreshTokenProvider(@Value("${security.jwt.token.secret-refresh-key}") final String secretKey,
-                                @Value("${security.jwt.token.refresh-expire-length}") final long validityInMilliseconds) {
+                                @Value("${security.jwt.token.expire-length}") final long validityInMilliseconds) {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         this.validityInMilliseconds = validityInMilliseconds;
     }
@@ -32,7 +33,7 @@ public class RefreshTokenProvider {
         return Jwts.builder()
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
     }
 
