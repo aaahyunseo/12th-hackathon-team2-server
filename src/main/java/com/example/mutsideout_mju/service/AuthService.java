@@ -1,8 +1,8 @@
 package com.example.mutsideout_mju.service;
 
-import com.example.mutsideout_mju.authentication.AccessTokenProvider;
+import com.example.mutsideout_mju.authentication.token.AccessTokenProvider;
 import com.example.mutsideout_mju.authentication.PasswordHashEncryption;
-import com.example.mutsideout_mju.authentication.RefreshTokenProvider;
+import com.example.mutsideout_mju.authentication.token.RefreshTokenProvider;
 import com.example.mutsideout_mju.dto.request.auth.LoginDto;
 import com.example.mutsideout_mju.dto.request.auth.SignupDto;
 import com.example.mutsideout_mju.dto.response.token.TokenResponseDto;
