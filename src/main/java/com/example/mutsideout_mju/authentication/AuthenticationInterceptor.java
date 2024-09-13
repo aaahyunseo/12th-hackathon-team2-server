@@ -1,5 +1,6 @@
 package com.example.mutsideout_mju.authentication;
 
+import com.example.mutsideout_mju.authentication.token.AccessTokenProvider;
 import com.example.mutsideout_mju.entity.User;
 import com.example.mutsideout_mju.exception.NotFoundException;
 import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
@@ -7,16 +8,14 @@ import com.example.mutsideout_mju.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
-@Slf4j
-@RequiredArgsConstructor
 @Component
+@RequiredArgsConstructor
 public class AuthenticationInterceptor implements HandlerInterceptor {
     private final UserRepository userRepository;
     private final AuthenticationContext authenticationContext;

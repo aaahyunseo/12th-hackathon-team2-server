@@ -1,7 +1,7 @@
 package com.example.mutsideout_mju.service;
 
 import com.example.mutsideout_mju.authentication.AuthenticationExtractor;
-import com.example.mutsideout_mju.authentication.RefreshTokenProvider;
+import com.example.mutsideout_mju.authentication.token.RefreshTokenProvider;
 import com.example.mutsideout_mju.entity.RefreshToken;
 import com.example.mutsideout_mju.exception.NotFoundException;
 import com.example.mutsideout_mju.exception.UnauthorizedException;
@@ -9,7 +9,6 @@ import com.example.mutsideout_mju.exception.errorCode.ErrorCode;
 import com.example.mutsideout_mju.repository.RefreshTokenRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +16,7 @@ import java.time.Duration;
 @Service
 @AllArgsConstructor
 public class CookieService {
+
     private final RefreshTokenProvider refreshTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     public void setCookie(HttpServletResponse response, String accessToken) {
